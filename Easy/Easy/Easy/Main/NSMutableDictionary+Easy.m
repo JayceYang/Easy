@@ -44,4 +44,19 @@
     }
 }
 
+- (void)removeObjectsExceptForKeysInGroup:(NSArray *)group
+{
+    @try {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (SELF IN %@)", group];
+        NSArray *toBeRemoved = [self.allKeys filteredArrayUsingPredicate:predicate];
+        [self removeObjectsForKeys:toBeRemoved];
+    }
+    @catch (NSException *exception) {
+        DLog(@"%@", exception.reason);
+    }
+    @finally {
+        
+    }
+}
+
 @end

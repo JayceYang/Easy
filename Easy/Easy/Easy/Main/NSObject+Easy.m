@@ -9,6 +9,7 @@
 #import <objc/runtime.h>
 
 #import "NSObject+Easy.h"
+#import "NSMutableDictionary+Easy.h"
 
 #import "ApplicationInfo.h"
 #import "NSManagedObjectContext+Easy.h"
@@ -163,6 +164,26 @@ NSString *NSStringFromCGSize(CGSize size)
         return [value boolValue];
     } else {
         return NO;
+    }
+}
+
+- (CGFloat)theFloatValue
+{
+    id value = self;
+    if ([value respondsToSelector:@selector(floatValue)]) {
+        return [value floatValue];
+    } else {
+        return 0.f;
+    }
+}
+
+- (double)theDoubleValue
+{
+    id value = self;
+    if ([value respondsToSelector:@selector(doubleValue)]) {
+        return [value doubleValue];
+    } else {
+        return 0.;
     }
 }
 
@@ -410,6 +431,29 @@ NSString *NSStringFromCGSize(CGSize size)
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults removeObjectForKey:key];
     [userDefaults synchronize];
+}
+
+- (void)clearUserDefaults
+{
+    [self clearUserDefaultsExceptForKeysContainsTheString:nil];
+}
+
+- (void)clearUserDefaultsExceptForKeysContainsTheString:(NSString *)string
+{
+    NSString *domainName = [self bundleIdentifier];
+    NSMutableDictionary *prefrences = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] persistentDomainForName:domainName]];
+    [prefrences removeObjectsExceptForKeysContainsTheString:string];
+    [[NSUserDefaults standardUserDefaults] setPersistentDomain:prefrences forName:domainName];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)clearUserDefaultsExceptForKeysInGroup:(NSArray *)group
+{
+    NSString *domainName = [self bundleIdentifier];
+    NSMutableDictionary *prefrences = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] persistentDomainForName:domainName]];
+    [prefrences removeObjectsExceptForKeysInGroup:group];
+    [[NSUserDefaults standardUserDefaults] setPersistentDomain:prefrences forName:domainName];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (UINavigationController *)currentNavigationController

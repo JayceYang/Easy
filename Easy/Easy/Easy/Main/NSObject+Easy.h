@@ -30,6 +30,8 @@ inline NSString *NSStringFromCGSize(CGSize size);
 
 - (NSInteger)theIntegerValue;   //Return - 1 if cann't respond
 - (BOOL)theBoolValue;   //Return NO if cann't respond
+- (CGFloat)theFloatValue;   //Return 0 if cann't respond
+- (double)theDoubleValue;   //Return 0 if cann't respond
 - (NSString *)theStringValue;   //Return [NSString string] if cann't respond
 - (NSDictionary *)theDictionaryValue;   //Return [NSDictionary dictionary] if cann't respond
 - (NSArray *)theArrayValue;   //Return [NSArray array] if cann't respond
@@ -84,6 +86,9 @@ inline NSString *NSStringFromCGSize(CGSize size);
  remove
  */
 - (void)userDefaultsRemoveObjectForKey:(NSString *)key;
+- (void)clearUserDefaults;
+- (void)clearUserDefaultsExceptForKeysContainsTheString:(NSString *)string;
+- (void)clearUserDefaultsExceptForKeysInGroup:(NSArray *)group;
 
 + (UINavigationController *)currentNavigationController;
 - (UINavigationController *)currentNavigationController;

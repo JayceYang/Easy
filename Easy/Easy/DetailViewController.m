@@ -8,6 +8,8 @@
 
 #import "DetailViewController.h"
 
+#import "Easy.h"
+
 @interface DetailViewController ()
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
 - (void)configureView;
@@ -35,15 +37,28 @@
 {
     // Update the user interface for the detail item.
 
-    if (self.detailItem) {
-        self.detailDescriptionLabel.text = [[self.detailItem valueForKey:@"timeStamp"] description];
-    }
+//    if (self.detailItem) {
+//        self.detailDescriptionLabel.text = [[self.detailItem valueForKey:@"timeStamp"] description];
+//    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    if (systemVersionGreaterThanOrEqualTo(7)) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
+    
+    self.webView.showsProgress = YES;
+    
+    __weak typeof(self) target = self;
+    [self.webView addProgressUpdatingHandler:^(CGFloat progress) {
+//        DLog(@"%f", progress);
+        target.title = [target.webView title];
+    }];
+    [self.webView loadRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://www.baidu.com/"]]];
     [self configureView];
 }
 

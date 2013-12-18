@@ -47,5 +47,7 @@
 #import "NSSet+Easy.h"
 #import "UIDevice+Easy.h"
 #import "UINavigationItem+Easy.h"
+#import "UILocalNotification+Easy.h"
+#import "UIWebView+Easy.h"
 
 #endif

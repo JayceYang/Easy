@@ -12,5 +12,6 @@
 
 - (void)removeObjectsExceptForKeys:(NSArray *)array;
 - (void)removeObjectsExceptForKeysContainsTheString:(NSString *)string;
+- (void)removeObjectsExceptForKeysInGroup:(NSArray *)group;
 
 @end

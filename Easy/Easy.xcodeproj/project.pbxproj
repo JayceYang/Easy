@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		280A8AD21860262100D3DAB4 /* UILocalNotification+Easy.m in Sources */ = {isa = PBXBuildFile; fileRef = 280A8AD11860262100D3DAB4 /* UILocalNotification+Easy.m */; };
+		286304CC18616ACA0038DA1D /* UIWebView+Easy.m in Sources */ = {isa = PBXBuildFile; fileRef = 286304CB18616ACA0038DA1D /* UIWebView+Easy.m */; };
 		28916753185AF30F00142F81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916752185AF30F00142F81 /* Foundation.framework */; };
 		28916755185AF30F00142F81 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916754185AF30F00142F81 /* CoreGraphics.framework */; };
 		28916757185AF30F00142F81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916756185AF30F00142F81 /* UIKit.framework */; };
@@ -77,6 +79,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		280A8AD01860262100D3DAB4 /* UILocalNotification+Easy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILocalNotification+Easy.h"; sourceTree = "<group>"; };
+		280A8AD11860262100D3DAB4 /* UILocalNotification+Easy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILocalNotification+Easy.m"; sourceTree = "<group>"; };
+		286304CA18616ACA0038DA1D /* UIWebView+Easy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+Easy.h"; sourceTree = "<group>"; };
+		286304CB18616ACA0038DA1D /* UIWebView+Easy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+Easy.m"; sourceTree = "<group>"; };
 		2891674F185AF30F00142F81 /* Easy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Easy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28916752185AF30F00142F81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		28916754185AF30F00142F81 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -375,6 +381,10 @@
 				289167EF185AF32F00142F81 /* UIView+Easy.m */,
 				289167F0185AF32F00142F81 /* UIViewController+Easy.h */,
 				289167F1185AF32F00142F81 /* UIViewController+Easy.m */,
+				280A8AD01860262100D3DAB4 /* UILocalNotification+Easy.h */,
+				280A8AD11860262100D3DAB4 /* UILocalNotification+Easy.m */,
+				286304CA18616ACA0038DA1D /* UIWebView+Easy.h */,
+				286304CB18616ACA0038DA1D /* UIWebView+Easy.m */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -448,7 +458,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
-				ORGANIZATIONNAME = "Jayce Yang";
+				ORGANIZATIONNAME = Personal;
 				TargetAttributes = {
 					2891677A185AF30F00142F81 = {
 						TestTargetID = 2891674E185AF30F00142F81;
@@ -507,6 +517,7 @@
 				28916825185AF32F00142F81 /* UIImage+Easy.m in Sources */,
 				28916832185AF32F00142F81 /* NSManagedObject+Mapping.m in Sources */,
 				28916830185AF32F00142F81 /* UIViewController+Easy.m in Sources */,
+				280A8AD21860262100D3DAB4 /* UILocalNotification+Easy.m in Sources */,
 				28916818185AF32F00142F81 /* NSMutableArray+Easy.m in Sources */,
 				2891680D185AF32F00142F81 /* EasyTextField.m in Sources */,
 				28916833185AF32F00142F81 /* NSObject+Mapping.m in Sources */,
@@ -531,6 +542,7 @@
 				28916822185AF32F00142F81 /* UIAlertView+Easy.m in Sources */,
 				28916817185AF32F00142F81 /* NSManagedObjectContext+Easy.m in Sources */,
 				2891681B185AF32F00142F81 /* NSObject+Easy.m in Sources */,
+				286304CC18616ACA0038DA1D /* UIWebView+Easy.m in Sources */,
 				28916824185AF32F00142F81 /* UIDevice+Easy.m in Sources */,
 				28916813185AF32F00142F81 /* NSDateFormatter+Easy.m in Sources */,
 				2891681D185AF32F00142F81 /* NSSet+Easy.m in Sources */,
