@@ -23,6 +23,7 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 @property (weak, nonatomic) id <UIWebViewDelegate> delegate;
 @property (weak, nonatomic) UIWebView *webView;
 @property (copy, nonatomic) void (^progressUpdatingHandler)(CGFloat progress);
+@property (copy, nonatomic) void (^completion)(void);
 @property (readonly, nonatomic) CGFloat progress; // 0.0..1.0
 
 @property (nonatomic) NSUInteger loadingCount;
@@ -46,7 +47,7 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)dealloc
 {
-//    DLog();
+//    NSLog();
 }
 
 #pragma mark - Private
@@ -72,6 +73,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 - (void)completeProgress
 {
     [self setProgress:1.0];
+    if (self.completion) {
+        self.completion();
+    }
 }
 
 - (void)setProgress:(float)progress
@@ -155,9 +159,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
         [webView stringByEvaluatingJavaScriptFromString:waitForCompleteJS];
     }
     
-    BOOL isNotRedirect = self.currentURL && [self.currentURL isEqual:webView.request.mainDocumentURL];
+//    BOOL isNotRedirect = self.currentURL && [self.currentURL isEqual:webView.request.mainDocumentURL];
     BOOL complete = [readyState isEqualToString:@"complete"];
-    if (complete && isNotRedirect) {
+    if (complete) {
         [self completeProgress];
     }
 }
@@ -180,9 +184,9 @@ static const float afterInteractiveMaxProgressValue = 0.9;
         [webView stringByEvaluatingJavaScriptFromString:waitForCompleteJS];
     }
     
-    BOOL isNotRedirect = self.currentURL && [self.currentURL isEqual:webView.request.mainDocumentURL];
+//    BOOL isNotRedirect = self.currentURL && [self.currentURL isEqual:webView.request.mainDocumentURL];
     BOOL complete = [readyState isEqualToString:@"complete"];
-    if (complete && isNotRedirect) {
+    if (complete) {
         [self completeProgress];
     }
 }
@@ -222,7 +226,7 @@ static const float afterInteractiveMaxProgressValue = 0.9;
 
 - (void)dealloc
 {
-//    DLog();
+//    NSLog();
 }
 
 #pragma mark - Public
@@ -287,25 +291,62 @@ const void *ShowsProgressKey = "ShowsProgressKey";
     [self didChangeValueForKey:@"showsProgress"];
 }
 
+#pragma mark - One Parameter
+
 - (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler
 {
-    [self addProgressUpdatingHandler:updatingHandler webViewDelegate:nil];
+    [self addProgressUpdatingHandler:updatingHandler completion:nil webViewDelegate:nil offset:CGPointZero];
+}
+
+#pragma mark - Two Parameters
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion
+{
+    [self addProgressUpdatingHandler:updatingHandler completion:completion webViewDelegate:nil offset:CGPointZero];
 }
 
 - (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler webViewDelegate:(id <UIWebViewDelegate>)delegate
 {
-    if (self.showsProgress) {
+    [self addProgressUpdatingHandler:updatingHandler completion:nil webViewDelegate:delegate offset:CGPointZero];
+}
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler offset:(CGPoint)offset
+{
+    [self addProgressUpdatingHandler:updatingHandler completion:nil webViewDelegate:nil offset:offset];
+}
+
+#pragma mark - Three Parameters
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion offset:(CGPoint)offset
+{
+    [self addProgressUpdatingHandler:updatingHandler completion:completion webViewDelegate:nil offset:offset];
+}
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion webViewDelegate:(id <UIWebViewDelegate>)delegate
+{
+    [self addProgressUpdatingHandler:updatingHandler completion:completion webViewDelegate:delegate offset:CGPointZero];
+}
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler webViewDelegate:(id <UIWebViewDelegate>)delegate offset:(CGPoint)offset
+{
+    [self addProgressUpdatingHandler:updatingHandler completion:nil webViewDelegate:delegate offset:offset];
+}
+
+#pragma mark - Four Parameters
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion webViewDelegate:(id <UIWebViewDelegate>)delegate offset:(CGPoint)offset
+{
+    if (self.progressView == nil) {
         CGFloat progressBarHeight = 2.5f;
-        EasyWebViewProgressView *progressView = [[EasyWebViewProgressView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), progressBarHeight)];
+        EasyWebViewProgressView *progressView = [[EasyWebViewProgressView alloc] initWithFrame:CGRectMake(offset.x, offset.y, CGRectGetWidth(self.bounds), progressBarHeight)];
         progressView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
         self.progressView = progressView;
         [self addSubview:progressView];
-    } else {
-        [self.progressView removeFromSuperview];
     }
     
     self.webViewProgress = [[WebViewProgress alloc] init];
     self.webViewProgress.progressUpdatingHandler = updatingHandler;
+    self.webViewProgress.completion = completion;
     self.webViewProgress.delegate = delegate;
     self.webViewProgress.webView = self;
     self.delegate = self.webViewProgress;
@@ -313,6 +354,7 @@ const void *ShowsProgressKey = "ShowsProgressKey";
 
 - (void)removeProgressUpdatingObserver
 {
+    [self.progressView removeFromSuperview];
     self.delegate = nil;
     self.webViewProgress.delegate = nil;
     self.webViewProgress = nil;

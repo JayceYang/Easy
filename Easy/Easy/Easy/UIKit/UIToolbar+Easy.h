@@ -10,6 +10,18 @@
 
 @interface UIToolbar (Easy)
 
+typedef NS_ENUM(NSInteger, InputAccessoryViewType) {
+    InputAccessoryViewTypeCancelDone,
+    InputAccessoryViewTypePreviousNextDone
+};
+
+@property (copy, nonatomic) void (^cancelHandler)(void);
+@property (copy, nonatomic) void (^doneHandler)(void);
+@property (copy, nonatomic) void (^previousHandler)(void);
+@property (copy, nonatomic) void (^nextHandler)(void);
+
++ (instancetype)toolbarWithInputAccessoryViewType:(InputAccessoryViewType)type;
+
 - (void)setSeparatedByFlexibleSpaceItems:(NSArray *)items animated:(BOOL)animated;
 - (void)setSeparatedByFlexibleSpaceViews:(NSArray *)views animated:(BOOL)animated;
 

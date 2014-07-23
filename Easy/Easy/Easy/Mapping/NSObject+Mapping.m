@@ -10,17 +10,20 @@
 #import "NSObject+Mapping.h"
 
 static char ClassNamesInArrayKey;
-static char KeyPathMappingKey;
-static char PropertyIndexKey;
+static char SourceKeyPathMappingKey;
+static char TargetKeyPathMappingKey;
+//static char PropertyIndexKey;
 //static char DateFormatKey;
 
-static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
+NSString * const DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ss.sssZ";
+NSString * const DefaultDateFormatCompatible = @"yyyy-MM-dd HH:mm:ss";
 
 @interface NSObject (MappingPrivate)
 
 @property (strong, nonatomic) NSMutableDictionary *classNamesInArray;
-@property (strong, nonatomic) NSMutableDictionary *keyPathMapping;
-@property (copy, nonatomic) NSNumber *propertyIndex;
+@property (strong, nonatomic) NSMutableDictionary *sourcekeyPathMapping;
+@property (strong, nonatomic) NSMutableDictionary *targetKeyPathMapping;
+//@property (copy, nonatomic) NSNumber *propertyIndex;
 
 
 
@@ -40,29 +43,41 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
     [self didChangeValueForKey:@"classNamesInArray"];
 }
 
-- (NSMutableDictionary *)keyPathMapping
+- (NSMutableDictionary *)sourcekeyPathMapping
 {
-    return objc_getAssociatedObject(self, &KeyPathMappingKey);
+    return objc_getAssociatedObject(self, &SourceKeyPathMappingKey);
 }
 
-- (void)setKeyPathMapping:(NSMutableDictionary *)keyPathMapping
+- (void)setSourcekeyPathMapping:(NSMutableDictionary *)sourcekeyPathMapping
 {
-    [self willChangeValueForKey:@"keyPathMapping"];
-    objc_setAssociatedObject(self, &KeyPathMappingKey, keyPathMapping, OBJC_ASSOCIATION_RETAIN);
-    [self didChangeValueForKey:@"keyPathMapping"];
+    [self willChangeValueForKey:@"sourcekeyPathMapping"];
+    objc_setAssociatedObject(self, &SourceKeyPathMappingKey, sourcekeyPathMapping, OBJC_ASSOCIATION_RETAIN);
+    [self didChangeValueForKey:@"sourcekeyPathMapping"];
 }
 
-- (NSString *)propertyIndex
+- (NSMutableDictionary *)targetKeyPathMapping
 {
-    return objc_getAssociatedObject(self, &PropertyIndexKey);
+    return objc_getAssociatedObject(self, &TargetKeyPathMappingKey);
 }
 
-- (void)setPropertyIndex:(NSString *)propertyIndex
+- (void)setTargetKeyPathMapping:(NSMutableDictionary *)targetKeyPathMapping
 {
-    [self willChangeValueForKey:@"propertyIndex"];
-    objc_setAssociatedObject(self, &PropertyIndexKey, propertyIndex, OBJC_ASSOCIATION_COPY_NONATOMIC);
-    [self didChangeValueForKey:@"propertyIndex"];
+    [self willChangeValueForKey:@"targetKeyPathMapping"];
+    objc_setAssociatedObject(self, &TargetKeyPathMappingKey, targetKeyPathMapping, OBJC_ASSOCIATION_RETAIN);
+    [self didChangeValueForKey:@"targetKeyPathMapping"];
 }
+
+//- (NSString *)propertyIndex
+//{
+//    return objc_getAssociatedObject(self, &PropertyIndexKey);
+//}
+//
+//- (void)setPropertyIndex:(NSString *)propertyIndex
+//{
+//    [self willChangeValueForKey:@"propertyIndex"];
+//    objc_setAssociatedObject(self, &PropertyIndexKey, propertyIndex, OBJC_ASSOCIATION_COPY_NONATOMIC);
+//    [self didChangeValueForKey:@"propertyIndex"];
+//}
 
 //- (NSString *)dateFormat
 //{
@@ -79,8 +94,6 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
 @end
 
 @interface NSString (MappingPrivate)
-
-- (NSDate *)dateValue;
 
 - (BOOL)stringType;
 - (BOOL)numberType;
@@ -99,7 +112,12 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
     dateFormatter.timeZone = [NSTimeZone defaultTimeZone];
     dateFormatter.locale = [NSLocale currentLocale];
     dateFormatter.dateFormat = DefaultDateFormat;
-    return [dateFormatter dateFromString:self];
+    NSDate *date = [dateFormatter dateFromString:self];
+    if (date == nil) {
+        dateFormatter.dateFormat = DefaultDateFormatCompatible;
+        date = [dateFormatter dateFromString:self];
+    }
+    return date;
 }
 
 - (NSNumber *)numberValue
@@ -143,7 +161,7 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
 
 @interface NSDate (MappingPrivate)
 
-- (NSString *)stringValue;
+//- (NSString *)stringValue;
 
 @end
 
@@ -192,7 +210,7 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
         }
     }
     @catch (NSException *exception) {
-//        DLog(@"%@", exception.reason);
+//        NSLog(@"%@", exception.reason);
     }
     @finally {
         return result;
@@ -221,26 +239,32 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
     for (NSUInteger counter = 0; counter < count; counter ++) {
         @autoreleasepool {
             
-            NSString *key = [NSString stringWithUTF8String:property_getName(properties[counter])];
-            key.propertyIndex = [NSNumber numberWithInteger:counter];
-            id value = [self valueForKey:key];
-//            DLog(@"%@:\t%@", key, NSStringFromClass([value class]));
+            NSString *propertyName = [NSString stringWithUTF8String:property_getName(properties[counter])];
+//            propertyName.propertyIndex = [NSNumber numberWithInteger:counter];
+            id value = [self valueForKey:propertyName];
+//            NSLog(@"%@:\t%@", key, NSStringFromClass([value class]));
+            
+            NSString *targetKey = [[self targetKeyPathMapping] objectForKey:propertyName];
+            if (targetKey.length > 0) {
+                propertyName = targetKey;
+            }
+            
             if ([value isKindOfClass:[NSArray class]]) {
-                [dictionary setValue:[value makeObjectsDictionaryValue] forKey:key];
+                [dictionary setValue:[value makeObjectsDictionaryValue] forKey:propertyName];
             } else if ([value isKindOfClass:[NSDictionary class]]){
-                [dictionary setValue:value forKey:key];
+                [dictionary setValue:value forKey:propertyName];
             } else if ([value isKindOfClass:[NSDate class]]){
-                [dictionary setValue:[value stringValue] forKey:key];
+                [dictionary setValue:[value stringValue] forKey:propertyName];
             } else if ([value isKindOfClass:[NSString class]]){
-                [dictionary setValue:value forKey:key];
+                [dictionary setValue:value forKey:propertyName];
             }  else if ([value isKindOfClass:[NSNumber class]]) {
-                [dictionary setValue:value forKey:key];
+                [dictionary setValue:value forKey:propertyName];
             } else if ([value isKindOfClass:[NSData class]]){
-                [dictionary setValue:[[NSString alloc] initWithData:value encoding:NSUTF8StringEncoding] forKey:key];
+                [dictionary setValue:[[NSString alloc] initWithData:value encoding:NSUTF8StringEncoding] forKey:propertyName];
             } else if ([value isKindOfClass:[NSNull class]]){
-                [dictionary setValue:nil forKey:key];
+                [dictionary setValue:nil forKey:propertyName];
             } else {
-                [dictionary setValue:[value dictionaryValue] forKey:key];
+                [dictionary setValue:[value dictionaryValue] forKey:propertyName];
             }
         }
     }
@@ -274,11 +298,20 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
 
 - (void)makePropertyNamesMappingForKey:(NSString *)key sourceKey:(NSString *)sourceKey
 {
-    if (self.keyPathMapping == nil) {
-        self.keyPathMapping = [NSMutableDictionary dictionary];
+    if (self.sourcekeyPathMapping == nil) {
+        self.sourcekeyPathMapping = [NSMutableDictionary dictionary];
     }
     
-    [self.keyPathMapping setValue:sourceKey forKey:key];
+    [self.sourcekeyPathMapping setValue:sourceKey forKey:key];
+}
+
+- (void)makePropertyNamesMappingForKey:(NSString *)key targetKey:(NSString *)targetKey
+{
+    if (self.targetKeyPathMapping == nil) {
+        self.targetKeyPathMapping = [NSMutableDictionary dictionary];
+    }
+    
+    [self.targetKeyPathMapping setValue:targetKey forKey:key];
 }
 
 - (id)valueOfClass:(Class)aClass forJSONDictionary:(NSDictionary *)dictionary
@@ -293,7 +326,7 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
                 
                 @autoreleasepool {
                     
-                    NSString *sourceKey = [[result keyPathMapping] objectForKey:propertyName];
+                    NSString *sourceKey = [[result sourcekeyPathMapping] objectForKey:propertyName];
                     if (sourceKey.length == 0) {
                         sourceKey = propertyName;
                     }
@@ -306,10 +339,29 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
                     objc_property_t property = class_getProperty(aClass, [propertyName UTF8String]);
                     NSString *attribute = [result attributeFromProperty:property];
                     
-                    // string or number
-                    if ([attribute JSONType]) {
+                    // string
+                    if ([attribute stringType]) {
                         if (object != [NSNull null]) {
-                            [result setValue:object forKey:propertyName];
+                            if ([object isKindOfClass:[NSNumber class]]) {
+                                [result setValue:[object stringValue] forKey:propertyName];
+                            } else {
+                                [result setValue:object forKey:propertyName];
+                            }
+                        } else {
+                            [result setValue:nil forKey:propertyName];
+                        }
+                    }
+                    
+                    // number
+                    else if ([attribute numberType]) {
+                        if (object != [NSNull null]) {
+                            if ([object isKindOfClass:[NSString class]]) {
+                                NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+                                [numberFormatter setNumberStyle:NSNumberFormatterNoStyle];
+                                [result setValue:[numberFormatter numberFromString:object] forKey:propertyName];
+                            } else {
+                                [result setValue:object forKey:propertyName];
+                            }
                         } else {
                             [result setValue:nil forKey:propertyName];
                         }
@@ -342,7 +394,7 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
             }
         }
         @catch (NSException *exception) {
-//            DLog(@"%@", exception.reason);
+//            NSLog(@"%@", exception.reason);
         }
         @finally {
             return result;
@@ -400,7 +452,7 @@ static NSString *DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
             }
         }
         @catch (NSException *exception) {
-//            DLog(@"%@", exception.reason);
+//            NSLog(@"%@", exception.reason);
         }
         @finally {
             // This is now an Array of objects
@@ -463,7 +515,7 @@ static const char * getPropertyType(objc_property_t property) {
     
     for (unsigned i = 0; i < count; i++) {
         NSString *key = [NSString stringWithUTF8String:property_getName(properties[i])];
-        key.propertyIndex = [NSNumber numberWithInt:i];
+//        key.propertyIndex = [NSNumber numberWithInt:i];
         [dict setObject:key forKey:key];
     }
     

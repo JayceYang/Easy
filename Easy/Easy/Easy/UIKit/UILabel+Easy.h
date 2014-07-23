@@ -12,5 +12,6 @@
 
 - (void)usingSystemFont;
 - (void)usingBoldSystemFont;
+- (void)usingFontWithName:(NSString *)name;
 
 @end

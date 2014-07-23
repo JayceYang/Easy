@@ -84,7 +84,7 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
 + (void)showErrorWithMessage:(NSString *)message
                      handler:(UIAlertViewHandler)handler {
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
                                                     message:message
                                                    delegate:nil
                                           cancelButtonTitle:NSLocalizedString(@"OK", nil)
@@ -99,7 +99,7 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
 + (void)showWarningWithMessage:(NSString *)message
                        handler:(UIAlertViewHandler)handler {
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning"
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning", nil)
                                                     message:message
                                                    delegate:nil
                                           cancelButtonTitle:NSLocalizedString(@"OK", nil)

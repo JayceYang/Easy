@@ -26,7 +26,16 @@
 @property (nonatomic) BOOL showsProgress;
 
 - (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler;
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion;
 - (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler webViewDelegate:(id <UIWebViewDelegate>)delegate;
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler offset:(CGPoint)offset;
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion offset:(CGPoint)offset;
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion webViewDelegate:(id <UIWebViewDelegate>)delegate;
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler webViewDelegate:(id <UIWebViewDelegate>)delegate offset:(CGPoint)offset;
+
+- (void)addProgressUpdatingHandler:(void (^)(CGFloat progress))updatingHandler completion:(void (^)(void))completion webViewDelegate:(id <UIWebViewDelegate>)delegate offset:(CGPoint)offset;
 - (void)removeProgressUpdatingObserver;
 - (NSString *)title;
 

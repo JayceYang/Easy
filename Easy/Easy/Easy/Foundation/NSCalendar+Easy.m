@@ -19,7 +19,7 @@
         dateComponents = [self components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         return dateComponents;
@@ -33,7 +33,7 @@
         dateComponents = [self components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:date];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         return dateComponents;

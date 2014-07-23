@@ -13,5 +13,12 @@
 + (NSString *)localeIdentifierFromOldLanguage:(NSString *)language;
 + (NSString *)oldLanguageFromLocaleIdentifier:(NSString *)identifier;
 + (NSString *)preferredLanguage;
++ (NSString *)preferredLanguageOld;
+
++ (NSString *)currentCountryCode;
++ (NSString *)currentCountryCodeLowercaseString;
++ (NSString *)currentLanguageCode;
++ (NSString *)currentCurrencyCode;
++ (BOOL)inChina;
 
 @end

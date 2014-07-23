@@ -10,6 +10,7 @@
 
 @interface NSDictionary (Easy)
 
-- (id)objectForTreeStyleKey:(NSString*)key;     //format the key to string separated by "/", eg. key/subkey
+- (id)objectForTreeStyleKey:(NSString *)key;     //format the key to string separated by "/", eg. key/subkey
+- (instancetype)mappingSourceKey:(NSString *)sourceKey withKey:(NSString *)targetKey;
 
 @end

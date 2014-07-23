@@ -10,7 +10,7 @@
 
 @interface NSObject (Mapping)
 
-@property (readonly, copy, nonatomic) NSString *propertyIndex;
+//@property (readonly, copy, nonatomic) NSString *propertyIndex;
 
 + (NSSortDescriptor *)sortDescriptorForPropertyIndex;
 
@@ -30,6 +30,7 @@
 - (void)setClass:(Class)aClass ofObjectsInArrayForKeyPath:(NSString *)path;
 
 - (void)makePropertyNamesMappingForKey:(NSString *)key sourceKey:(NSString *)sourceKey;
+- (void)makePropertyNamesMappingForKey:(NSString *)key targetKey:(NSString *)targetKey;
 
 /*
  Object Mapping
@@ -39,3 +40,17 @@
 - (NSArray *)valueOfClass:(Class)aClass forJSONArray:(NSArray *)array;
 
 @end
+
+@interface NSString (Mapping)
+
+- (NSDate *)dateValue;
+
+@end
+
+@interface NSDate (Mapping)
+
+- (NSString *)stringValue;
+
+@end
+
+extern NSString * const DefaultDateFormat;

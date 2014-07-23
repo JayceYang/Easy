@@ -18,7 +18,7 @@
         [self addObject:anObject];
     }
     @catch (NSException *exception) {
-        DLog(@"%@",exception.reason);
+        NSLog(@"%@",exception.reason);
     }
     @finally {
         
@@ -31,7 +31,7 @@
         [self addObjectsFromArray:array];
     }
     @catch (NSException *exception) {
-        DLog(@"%@",exception.reason);
+        NSLog(@"%@",exception.reason);
     }
     @finally {
         

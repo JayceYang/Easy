@@ -21,7 +21,7 @@
             [self removeObjectsForKeys:toBeRemoved];
         }
         @catch (NSException *exception) {
-            DLog(@"%@", exception.reason);
+            NSLog(@"%@", exception.reason);
         }
         @finally {
             
@@ -37,7 +37,7 @@
         [self removeObjectsForKeys:toBeRemoved];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         
@@ -52,7 +52,7 @@
         [self removeObjectsForKeys:toBeRemoved];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         

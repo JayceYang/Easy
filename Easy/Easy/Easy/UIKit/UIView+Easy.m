@@ -13,7 +13,6 @@
 #import "UIImage+Easy.h"
 #import "NSObject+Easy.h"
 
-static char UserInfoKey;
 static char TapGestureHandlerKey;
 static char KeyboardWillShowHandlerKey;
 static char KeyboardWillHideHandlerKey;
@@ -28,18 +27,6 @@ static char KeyboardWillHideHandlerKey;
 @end
 
 @implementation UIView (Easy)
-
-- (id)userInfo
-{
-    return objc_getAssociatedObject(self, &UserInfoKey);
-}
-
-- (void)setUserInfo:(id)userInfo
-{
-    [self willChangeValueForKey:@"userInfo"];
-    objc_setAssociatedObject(self, &UserInfoKey, userInfo, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"userInfo"];
-}
 
 - (void (^)(void))tapGestureHandler
 {
@@ -189,6 +176,13 @@ static char KeyboardWillHideHandlerKey;
 {
     CGRect rect = self.frame;
     rect.size.height = setting;
+    self.frame = rect;
+}
+
+- (void)configureFrameBySettingSize:(CGSize)size
+{
+    CGRect rect = self.frame;
+    rect.size = size;
     self.frame = rect;
 }
 

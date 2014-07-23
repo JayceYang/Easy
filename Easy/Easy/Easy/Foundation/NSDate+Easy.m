@@ -14,7 +14,6 @@
 #import "NSTimeZone+Easy.h"
 #import "NSCalendar+Easy.h"
 #import "NSObject+Easy.h"
-#import "Constants.h"
 #import "Macro.h"
 
 #import "ApplicationInfo.h"
@@ -37,11 +36,6 @@
     return result;
 }
 
-- (NSString *)stringValue
-{
-    return [self stringValueFromDateFormat:kDefaultFromDateFormat];
-}
-
 - (NSString *)stringValueFromDateFormat:(NSString *)dateFormat
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -50,8 +44,6 @@
     
     if ([dateFormat isKindOfClass:[NSString class]]) {
         [dateFormatter setDateFormat:dateFormat];
-    } else {
-        [dateFormatter setDateFormat:kDefaultFromDateFormat];
     }
     
     [dateFormatter localizeSymbols];
@@ -254,16 +246,7 @@
 	NSDate *midnight = [calendar dateFromComponents:offsetComponents];
     NSDateComponents *componentsToSubtract = [[NSDateComponents alloc] init];
     [componentsToSubtract setDay:interval];
-    NSDate *date = nil;
-#ifdef __IPHONE_7_0
-    if (systemVersionGreaterThanOrEqualTo(7)) {
-        date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:NSCalendarWrapComponents];
-    } else {
-        date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:0];
-    }
-#else
-    date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:0];
-#endif
+    NSDate *date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:NSCalendarWrapComponents];
 
     return date;
 }
@@ -276,16 +259,8 @@
 	NSDate *midnight = [calendar dateFromComponents:offsetComponents];
     NSDateComponents *componentsToSubtract = [[NSDateComponents alloc] init];
     [componentsToSubtract setDay:interval];
-    NSDate *date = nil;
-#ifdef __IPHONE_7_0
-    if (systemVersionGreaterThanOrEqualTo(7)) {
-        date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:NSCalendarWrapComponents];
-    } else {
-        date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:0];
-    }
-#else
-    date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:0];
-#endif
+    NSDate *date = date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:NSCalendarWrapComponents];
+    
     return date;
 }
 

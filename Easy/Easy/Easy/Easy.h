@@ -9,13 +9,13 @@
 #ifndef Easy_Easy_h
 #define Easy_Easy_h
 
-#import "Enum.h"
 #import "Macro.h"
-#import "Constants.h"
+#import "CoreDataStore.h"
 #import "UIAlertView+Easy.h"
 #import "UIViewController+Easy.h"
 #import "UIView+Easy.h"
 #import "UITableView+Easy.h"
+#import "UITableViewCell+Easy.h"
 #import "NSObject+Easy.h"
 #import "UIImage+Easy.h"
 #import "UINavigationController+Easy.h"
@@ -24,13 +24,9 @@
 #import "NSArray+Easy.h"
 #import "NSMutableArray+Easy.h"
 #import "CLGeocoder+Easy.h"
-#import "EasyTextField.h"
-#import "EasyTextField+Easy.h"
 #import "NSLocale+Easy.h"
 #import "UITextField+Easy.h"
 #import "UISearchBar+Easy.h"
-#import "NSManagedObjectContext+Easy.h"
-#import "NSFetchedResultsController+Easy.h"
 #import "NSData+Easy.h"
 #import "NSMutableDictionary+Easy.h"
 #import "NSOperation+Easy.h"
@@ -49,6 +45,9 @@
 #import "UILocalNotification+Easy.h"
 #import "UIWebView+Easy.h"
 #import "UIColor+Easy.h"
+#import "UIButton+Easy.h"
 #import "Mapping.h"
+#import "EasyLabel.h"
+#import "LocationManager.h"
 
 #endif

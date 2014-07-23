@@ -16,7 +16,6 @@
 @property (copy, nonatomic) void (^viewControllerPushCompletionHandler)(void);
 @property (strong, nonatomic) MenuViewController *menuViewController;
 @property (strong, nonatomic) UIImageView *splashImageView;
-@property (nonatomic) BOOL presentingMode;
 
 + (instancetype)navigationControllerWithRootViewControllerClass:(Class)rootViewControllerClass hasNib:(BOOL)hasNib;
 

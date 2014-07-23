@@ -11,11 +11,7 @@
 #import "NSManagedObject+Mapping.h"
 
 #import "NSObject+Mapping.h"
-#import "NSManagedObjectContext+Easy.h"
-#import "NSString+Easy.h"
-#import "Macro.h"
 
-//static char SortIDKey;
 static char PropertyNamesMappingKey;
 
 @interface NSManagedObject ()
@@ -42,17 +38,27 @@ static char PropertyNamesMappingKey;
 
 #pragma mark - Public
 
-//- (NSString *)sortID
-//{
-//    return objc_getAssociatedObject(self, &SortIDKey);
-//}
-//
-//- (void)setSortID:(NSString *)sortID
-//{
-//    [self willChangeValueForKey:@"sortID"];
-//    objc_setAssociatedObject(self, &SortIDKey, sortID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-//    [self didChangeValueForKey:@"sortID"];
-//}
++ (NSManagedObjectID *)managedObjectIDForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context
+{
+    return [[self managedObjectForDictionary:dictionary insertIntoManagedObjectContext:context] objectID];
+}
+
++ (NSArray *)managedObjectIDsForArray:(NSArray *)array insertIntoManagedObjectContext:(NSManagedObjectContext *)context
+{
+    NSMutableArray *result = nil;
+    @try {
+        for (NSDictionary *dictionary in result) {
+            NSManagedObjectID *managedObjectID = [self managedObjectIDForDictionary:dictionary insertIntoManagedObjectContext:context];
+            [result addObject:managedObjectID];
+        }
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
+    @finally {
+        return [result copy];
+    }
+}
 
 + (instancetype)managedObjectForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context
 {
@@ -93,11 +99,21 @@ static char PropertyNamesMappingKey;
                 id value = [dictionary objectForKey:sourceKey];
                 if ([relationshipDescription isToMany]) {
                     if ([value isKindOfClass:[NSArray class]]) {
-                        NSSet *set = [self managedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:value insertIntoManagedObjectContext:context];
-                        [result setValue:set forKey:key];
+                        if ([relationshipDescription isOrdered]) {
+                            NSOrderedSet *set = [self orderedManagedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:value insertIntoManagedObjectContext:context];
+                            [result setValue:set forKey:key];
+                        } else {
+                            NSSet *set = [self managedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:value insertIntoManagedObjectContext:context];
+                            [result setValue:set forKey:key];
+                        }
                     } else if ([value isKindOfClass:[NSDictionary class]]) {
-                        NSSet *set = [self managedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:@[value] insertIntoManagedObjectContext:context];
-                        [result setValue:set forKey:key];
+                        if ([relationshipDescription isOrdered]) {
+                            NSOrderedSet *set = [self orderedManagedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:@[value] insertIntoManagedObjectContext:context];
+                            [result setValue:set forKey:key];
+                        } else {
+                            NSSet *set = [self managedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:@[value] insertIntoManagedObjectContext:context];
+                            [result setValue:set forKey:key];
+                        }
                     }
                 } else {
                     if ([value isKindOfClass:[NSDictionary class]]) {
@@ -114,11 +130,11 @@ static char PropertyNamesMappingKey;
         NSError *error = nil;
         [context save:&error];
         if (error) {
-            DLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         }
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         return result;
@@ -142,10 +158,34 @@ static char PropertyNamesMappingKey;
         }
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         return [NSSet setWithArray:managedObjects];
+    }
+}
+
++ (NSOrderedSet *)orderedManagedObjectsOfClass:(Class)aClass forArray:(NSArray *)array insertIntoManagedObjectContext:(NSManagedObjectContext *)context
+{
+    NSMutableArray *managedObjects = [NSMutableArray array];
+    
+    @try {
+        NSUInteger count = [array count];
+        for (NSUInteger counter = 0; counter < count; counter ++) {
+            id object = [array objectAtIndex:counter];
+            if ([object isKindOfClass:[NSDictionary class]]) {
+                NSManagedObject *managedObject = [aClass managedObjectForDictionary:object insertIntoManagedObjectContext:context];
+                if (managedObject) {
+                    [managedObjects addObject:managedObject];
+                }
+            }
+        }
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
+    @finally {
+        return [NSOrderedSet orderedSetWithArray:managedObjects];
     }
 }
 
@@ -158,26 +198,109 @@ static char PropertyNamesMappingKey;
     [self.propertyNamesMapping setValue:sourceKey forKey:key];
 }
 
-+ (void)logAllInManagedObjectContext:(NSManagedObjectContext *)context
+- (NSDictionary *)dictionaryValueIgnoreRelationship:(NSRelationshipDescription *)relationship
 {
-    NSArray *existed = [context executeFetchEntityForManagedObjectClass:self];
-    NSUInteger counter = 0;
-    DLog(@"Found %lu items of %@ in total:", (unsigned long)existed.count, NSStringFromClass([self class]));
-    for (NSManagedObject *object in existed) {
-        DLog(@"%lu:\t%@", (unsigned long)counter, object);
-        counter ++ ;
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    @try {
+        NSDictionary *properties = [[self entity] propertiesByName];
+        for (NSString *propertyName in properties) {
+            id property = [properties objectForKey:propertyName];
+            if ([property isKindOfClass:[NSAttributeDescription class]]) {
+                NSAttributeType attributeType = [property attributeType];
+                id value = [self valueForKey:propertyName];
+                if (value == nil) {
+                    // Don't attempt to set nil, or you'll overwite values in self that aren't present in keyedValues
+                    continue;
+                }
+                if (attributeType == NSDateAttributeType) {
+                    value = [value stringValue];
+                }
+                [result setValue:value forKey:propertyName];
+            } else if ([property isKindOfClass:[NSRelationshipDescription class]]) {
+                NSRelationshipDescription *relationshipDescription = property;
+                NSEntityDescription *destinationEntity = [relationshipDescription destinationEntity];
+                NSString *destinationEntityName = [destinationEntity name];
+                if (![destinationEntityName isEqualToString:[[relationship destinationEntity] name]]) {
+                    id value = [self valueForKey:propertyName];
+                    if ([relationshipDescription isToMany]) {
+                        NSMutableArray *toMany = [NSMutableArray array];
+                        if ([value isKindOfClass:[NSSet class]] || [value isKindOfClass:[NSOrderedSet class]]) {
+                            for (NSManagedObject *entity in value) {
+                                NSDictionary *dictionary = [entity dictionaryValueIgnoreRelationship:[relationshipDescription inverseRelationship]];
+                                if (dictionary) {
+                                    [toMany addObject:dictionary];
+                                }
+                            }
+                        }
+                        [result setValue:toMany forKey:propertyName];
+                    } else {
+                        NSDictionary *dictionary = [value dictionaryValue];
+                        if (dictionary) {
+                            [result setValue:dictionary forKey:propertyName];
+                        }
+                    }
+                }
+            }
+        }
     }
-}
-
-- (void)logAll
-{
-    [[self class] logAllInManagedObjectContext:self.managedObjectContext];
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
+    @finally {
+        return [result mutableCopy];
+    }
 }
 
 - (NSDictionary *)dictionaryValue
 {
-    NSArray *allKeys = [[[self entity] propertiesByName] allKeys];
-    return [self dictionaryWithValuesForKeys:allKeys];
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    @try {
+        NSDictionary *properties = [[self entity] propertiesByName];
+        for (NSString *propertyName in properties) {
+            id property = [properties objectForKey:propertyName];
+            if ([property isKindOfClass:[NSAttributeDescription class]]) {
+                NSAttributeType attributeType = [property attributeType];
+                id value = [self valueForKey:propertyName];
+                if (value == nil) {
+                    // Don't attempt to set nil, or you'll overwite values in self that aren't present in keyedValues
+                    continue;
+                }
+                if (attributeType == NSDateAttributeType) {
+                    value = [value stringValue];
+                }
+                [result setValue:value forKey:propertyName];
+            } else if ([property isKindOfClass:[NSRelationshipDescription class]]) {
+                NSRelationshipDescription *relationshipDescription = property;
+                id value = [self valueForKey:propertyName];
+                if ([relationshipDescription isToMany]) {
+                    NSMutableArray *toMany = [NSMutableArray array];
+                    if ([value isKindOfClass:[NSSet class]] || [value isKindOfClass:[NSOrderedSet class]]) {
+                        for (NSManagedObject *entity in value) {
+                            NSDictionary *dictionary = [entity dictionaryValueIgnoreRelationship:[relationshipDescription inverseRelationship]];
+                            if (dictionary) {
+                                [toMany addObject:dictionary];
+                            }
+                        }
+                    }
+                    [result setValue:toMany forKey:propertyName];
+                } else {
+                    NSDictionary *dictionary = [value dictionaryValue];
+                    if (dictionary) {
+                        [result setValue:dictionary forKey:propertyName];
+                    }
+                }
+            }
+        }
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
+    @finally {
+        return [result mutableCopy];
+    }
+    
+//    NSArray *allKeys = [[[self entity] propertiesByName] allKeys];
+//    return [self dictionaryWithValuesForKeys:allKeys];
 }
 
 @end

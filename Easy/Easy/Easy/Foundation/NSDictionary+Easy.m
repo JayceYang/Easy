@@ -12,7 +12,7 @@
 
 @implementation NSDictionary (Easy)
 
-- (id)objectForTreeStyleKey:(NSString*)key
+- (id)objectForTreeStyleKey:(NSString *)key
 {
     NSDictionary *result = nil;
     @try {
@@ -25,13 +25,26 @@
         result = [dictionary objectForKey:[keys objectAtIndex:count - 1]];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         return result;
     }
-	
-	
+}
+
+- (instancetype)mappingSourceKey:(NSString *)sourceKey withKey:(NSString *)targetKey
+{
+    NSMutableDictionary *result = [self mutableCopy];
+    @try {
+        result[targetKey] = result[sourceKey];
+        [result removeObjectForKey:sourceKey];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
+    @finally {
+        return [result mutableCopy];
+    }
 }
 
 @end

@@ -16,19 +16,46 @@
 #import "UINavigationController+Easy.h"
 #import "NSArray+Easy.h"
 #import "UIAlertView+Easy.h"
-#import "Enum.h"
-#import "Constants.h"
 #import "Macro.h"
 
 static char HasPerformedOnceHandlerKey;
+static char LeftButtonActionHandlerKey;
+static char RightButtonActionHandlerKey;
 
 @interface UIViewController ()
+
+@property (copy, nonatomic) void (^leftButtonActionHandler)(void);
+@property (copy, nonatomic) void (^rightButtonActionHandler)(void);
 
 @property (nonatomic) BOOL hasPerformedOnceHandler;
 
 @end
 
 @implementation UIViewController (Easy)
+
+- (void (^)(void))leftButtonActionHandler
+{
+    return objc_getAssociatedObject(self, &LeftButtonActionHandlerKey);
+}
+
+- (void)setLeftButtonActionHandler:(void (^)(void))leftButtonActionHandler
+{
+    [self willChangeValueForKey:@"leftButtonActionHandler"];
+    objc_setAssociatedObject(self, &LeftButtonActionHandlerKey, leftButtonActionHandler, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    [self didChangeValueForKey:@"leftButtonActionHandler"];
+}
+
+- (void (^)(void))rightButtonActionHandler
+{
+    return objc_getAssociatedObject(self, &RightButtonActionHandlerKey);
+}
+
+- (void)setRightButtonActionHandler:(void (^)(void))rightButtonActionHandler
+{
+    [self willChangeValueForKey:@"rightButtonActionHandler"];
+    objc_setAssociatedObject(self, &RightButtonActionHandlerKey, rightButtonActionHandler, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    [self didChangeValueForKey:@"rightButtonActionHandler"];
+}
 
 - (BOOL)hasPerformedOnceHandler
 {
@@ -81,11 +108,15 @@ static char HasPerformedOnceHandlerKey;
 
 - (void)configureEdgesForExtendedLayout
 {
-#ifdef __IPHONE_7_0
-    if (systemVersionGreaterThanOrEqualTo(7)) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-    }
-#endif
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+}
+
+- (void)configureBackgroundColor
+{
+    self.view.backgroundColor = RGBColor(233, 234, 232);
+//    if ([self isKindOfClass:[UITableViewController class]]) {
+//        <#statements#>
+//    }
 }
 
 - (void)configureBackgroundForView:(UIView *)view image:(UIImage *)image
@@ -104,6 +135,92 @@ static char HasPerformedOnceHandlerKey;
         imageView.frame = view.bounds;
         [view addSubview:imageView];
         [view sendSubviewToBack:imageView];
+    }
+}
+
+- (void)configureBackButton
+{
+    [self configureBackButtonWithActionHandler:nil];
+}
+
+- (void)configureBackButtonWithActionHandler:(void (^)(void))handler
+{
+    self.navigationItem.title = [NSString string];
+    return;
+    if (handler) {
+        [self configureLeftButtonWithActionHandler:handler];
+    } else {
+        UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *image = [UIImage imageNamed:@"back_button_ transparent_normal.png"];
+        backButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
+        [backButton setImage:image forState:UIControlStateNormal];
+        [backButton setImage:[UIImage imageNamed:@"back_button_ transparent_highlighted.png"] forState:UIControlStateHighlighted];
+        [backButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+//        self.navigationController.interactivePopGestureRecognizer.delegate = (id <UIGestureRecognizerDelegate>)self;
+    }
+}
+
+- (void)back
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)configureLeftButtonWithActionHandler:(void (^)(void))handler
+{
+    [self configureLeftButtonWithNormalImage:[UIImage imageNamed:@"back_button_ transparent_normal.png"] highlightedImage:[UIImage imageNamed:@"back_button_ transparent_highlighted.png"] actionHandler:handler];
+}
+
+- (void)configureLeftButtonWithNormalImage:(UIImage *)noramlImage actionHandler:(void (^)(void))handler
+{
+    [self configureLeftButtonWithNormalImage:noramlImage highlightedImage:nil actionHandler:handler];
+}
+
+- (void)configureLeftButtonWithNormalImage:(UIImage *)noramlImage highlightedImage:(UIImage *)highlightedImage actionHandler:(void (^)(void))handler
+{
+    self.navigationItem.title = [NSString string];
+    self.leftButtonActionHandler = handler;
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, 0, noramlImage.size.width, noramlImage.size.height);
+    [button setImage:noramlImage forState:UIControlStateNormal];
+    if (highlightedImage) {
+        [button setImage:highlightedImage forState:UIControlStateHighlighted];
+    }
+    [button addTarget:self action:@selector(leftButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+}
+
+- (void)leftButtonAction
+{
+    if (self.leftButtonActionHandler) {
+        self.leftButtonActionHandler();
+    }
+}
+
+- (void)configureRightButtonWithNormalImage:(UIImage *)noramlImage actionHandler:(void (^)(void))handler
+{
+    [self configureRightButtonWithNormalImage:noramlImage highlightedImage:nil actionHandler:handler];
+}
+
+- (void)configureRightButtonWithNormalImage:(UIImage *)noramlImage highlightedImage:(UIImage *)highlightedImage actionHandler:(void (^)(void))handler
+{
+    self.rightButtonActionHandler = handler;
+    
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, 0, noramlImage.size.width, noramlImage.size.height);
+    [button setImage:noramlImage forState:UIControlStateNormal];
+    if (highlightedImage) {
+        [button setImage:highlightedImage forState:UIControlStateHighlighted];
+    }
+    [button addTarget:self action:@selector(rightButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+}
+
+- (void)rightButtonAction
+{
+    if (self.rightButtonActionHandler) {
+        self.rightButtonActionHandler();
     }
 }
 
@@ -150,7 +267,7 @@ static char HasPerformedOnceHandlerKey;
         }
         [navigationController setViewControllers:allViewControllers animated:animated];
     } else {
-        DLog();
+        ELog();
     }
 }
 
@@ -167,11 +284,9 @@ static char HasPerformedOnceHandlerKey;
 - (CGFloat)perferedY
 {
     CGFloat result = 0.f;
-    if (systemVersionGreaterThanOrEqualTo(7)) {
-        CGFloat statusBarHeight = CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame]);
-        CGFloat navigationBarHeight = self.navigationController.navigationBarHidden ? 0 : self.navigationController.navigationBar.bounds.size.height;
-        result = statusBarHeight + navigationBarHeight;
-    }
+    CGFloat statusBarHeight = CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame]);
+    CGFloat navigationBarHeight = self.navigationController.navigationBarHidden ? 0 : self.navigationController.navigationBar.bounds.size.height;
+    result = statusBarHeight + navigationBarHeight;
     return result;
 }
 

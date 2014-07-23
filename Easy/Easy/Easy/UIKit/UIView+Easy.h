@@ -8,22 +8,27 @@
 
 #import <UIKit/UIKit.h>
 
-#define kButtonFontSize                     [UIFont buttonFontSize]         /* 18px */
-#define kLabelFontSize                      [UIFont labelFontSize]          /* 17px */
-#define kSystemFontSize                     [UIFont systemFontSize]         /* 14px */
-#define kSmallSystemFontSize                [UIFont smallSystemFontSize]    /* 12px */
+#define ButtonFontSize                     [UIFont buttonFontSize]         /* 18px */
+#define LabelFontSize                      [UIFont labelFontSize]          /* 17px */
+#define SystemFontSize                     [UIFont systemFontSize]         /* 14px */
+#define SmallSystemFontSize                [UIFont smallSystemFontSize]    /* 12px */
 
-#define kButtonFont                         [UIFont systemFontOfSize:[UIFont buttonFontSize]]
-#define kLabelFont                          [UIFont systemFontOfSize:[UIFont labelFontSize]]
-#define kSystemFont                         [UIFont systemFontOfSize:[UIFont systemFontSize]]
-#define kSmallSystemFont                    [UIFont systemFontOfSize:[UIFont smallSystemFontSize]]
+#define ButtonFont                         [UIFont systemFontOfSize:[UIFont buttonFontSize]]
+#define LabelFont                          [UIFont systemFontOfSize:[UIFont labelFontSize]]
+#define SystemFont                         [UIFont systemFontOfSize:[UIFont systemFontSize]]
+#define SmallSystemFont                    [UIFont systemFontOfSize:[UIFont smallSystemFontSize]]
+#define SystemFontOfSize(fontSize)         [UIFont systemFontOfSize:fontSize]
+
+#define BoldButtonFont                         [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]]
+#define BoldLabelFont                          [UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
+#define BoldSystemFont                         [UIFont boldSystemFontOfSize:[UIFont systemFontSize]]
+#define BoldSmallSystemFont                    [UIFont boldSystemFontOfSize:[UIFont smallSystemFontSize]]
+#define BoldSystemFontOfSize(fontSize)         [UIFont boldSystemFontOfSize:fontSize]
 
 #define RGBColor(r,g,b)  [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
 #define RGBAColor(r,g,b,a)  [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a]
 
 @interface UIView (Easy)
-
-@property (strong, nonatomic) id userInfo;
 
 - (UITapGestureRecognizer *)addTapGestureRecognizerWithHandler:(void (^)(void))handler;
 - (UITapGestureRecognizer *)addTapGestureRecognizerWithHandler:(void (^)(void))handler delegate:(id <UIGestureRecognizerDelegate>)delegate;
@@ -40,6 +45,7 @@
 - (void)configureFrameBySettingY:(CGFloat)setting;
 - (void)configureFrameBySettingWidth:(CGFloat)setting;
 - (void)configureFrameBySettingHeight:(CGFloat)setting;
+- (void)configureFrameBySettingSize:(CGSize)size;
 - (void)configureFrameByAppendingX:(CGFloat)appending;
 - (void)configureFrameByAppendingY:(CGFloat)appending;
 - (void)configureFrameByAppendingWidth:(CGFloat)appending;
@@ -48,8 +54,6 @@
 - (void)configureWithBorderColor:(UIColor *)borderColor borderWidth:(CGFloat)borderWidth cornerRadius:(CGFloat)cornerRadius;
 - (void)configureBackgroundWithImage:(UIImage *)image;
 - (void)removeAllSubviews;
-
-//Default is [UIFont labelFontSize] 17px, black background
 
 - (void)configureGeneralAppearanceWhenFetchingNoData;
 

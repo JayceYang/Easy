@@ -10,15 +10,16 @@
 
 @interface NSManagedObject (Mapping)
 
-//@property (strong, nonatomic) NSNumber *sortID;
+//+ (instancetype)managedObjectForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context;
 
-+ (instancetype)managedObjectForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context;
+/* 
+ NSManagedObjectID is Thread Safety, and NSManagedObject is not Thread Safety 
+ */
++ (NSManagedObjectID *)managedObjectIDForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context;
++ (NSArray *)managedObjectIDsForArray:(NSArray *)array insertIntoManagedObjectContext:(NSManagedObjectContext *)context;
 
 - (NSDictionary *)dictionaryValue;
 
 - (void)makePropertyNamesMappingForKey:(NSString *)key sourceKey:(NSString *)sourceKey;
-
-+ (void)logAllInManagedObjectContext:(NSManagedObjectContext *)context;
-- (void)logAll;
 
 @end

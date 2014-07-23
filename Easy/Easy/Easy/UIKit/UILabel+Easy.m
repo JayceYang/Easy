@@ -20,4 +20,9 @@
     self.font = [UIFont boldSystemFontOfSize:self.font.pointSize];
 }
 
+- (void)usingFontWithName:(NSString *)name
+{
+    self.font = [UIFont fontWithName:name size:self.font.pointSize];
+}
+
 @end

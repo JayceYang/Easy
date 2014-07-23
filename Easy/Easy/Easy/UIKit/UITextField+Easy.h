@@ -13,5 +13,6 @@
 - (void)makePadding:(CGFloat)padding;
 - (UIView *)makeLeftPadding:(CGFloat)padding;
 - (UIView *)makeRightPadding:(CGFloat)padding;
+- (void)usingFontWithName:(NSString *)name;
 
 @end

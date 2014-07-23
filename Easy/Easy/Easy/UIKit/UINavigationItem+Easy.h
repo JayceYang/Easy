@@ -10,6 +10,8 @@
 
 @interface UINavigationItem (Easy)
 
+@property (copy, nonatomic) NSString *extraTitle;
+
 - (void)setPreferedTitleView:(UIView *)view;
 - (void)setPreferedTitleView:(UIView *)view autoresizingMask:(UIViewAutoresizing)mask;
 

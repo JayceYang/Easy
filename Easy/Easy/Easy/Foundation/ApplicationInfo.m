@@ -70,7 +70,7 @@
         } else {
             // Make UUID when launch first time
             NSString *UUID = [[UIDevice currentDevice] UUIDString];
-            DLog(@"Make UUID %@ first time.", UUID);
+            NSLog(@"Make UUID %@ first time.", UUID);
             userInfo.UUID = UUID;
             [userInfo clear];
             sharedInstance = userInfo;
@@ -95,7 +95,7 @@
 //    NSError *error = nil;
 //    [[NSFileManager defaultManager] removeItemAtPath:[self filePath] error:&error];
 //    if (error) {
-//        DLog(@"%@", error.localizedDescription);
+//        NSLog(@"%@", error.localizedDescription);
 //    }
     
     // Clear any data you want
@@ -112,7 +112,7 @@
     NSKeyedUnarchiver *keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     ApplicationInfo *value = [keyedUnarchiver decodeObjectForKey:NSStringFromClass([self class])];
     [keyedUnarchiver finishDecoding];
-    DLog(@"\nUUID:%@", value.UUID);
+    NSLog(@"\nUUID:%@", value.UUID);
     
     return value;
 }

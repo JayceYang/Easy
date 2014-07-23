@@ -12,9 +12,6 @@
 
 + (id)dateWithDate:(NSDate *)date time:(NSDate *)time;
 
-/* use kDateFormatForServer */
-- (NSString *)stringValue;
-
 - (NSString *)stringValueFromDateFormat:(NSString *)dateFormat;
 - (NSString *)stringValueWithDateFormatStyle:(NSDateFormatterStyle)style;
 

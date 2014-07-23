@@ -12,7 +12,6 @@
 #import "NSDateFormatter+Easy.h"
 #import "ApplicationInfo.h"
 #import "NSLocale+Easy.h"
-#import "Constants.h"
 #import "Macro.h"
 
 @implementation NSString (Easy)
@@ -37,39 +36,37 @@
 
 - (NSString *)noneNullStringValue
 {
-    NSString *result = [self stringByReplacingOccurrencesOfString:@"(null)" withString:[NSString string]];
-//    result = [self stringByReplacingOccurrencesOfString:@"null" withString:[NSString string]];
-//    if ([result length] == 0) {
-//        result = [NSString string];
-//    }
+    NSString *pattern = @"(?:\\(null\\))|(?:null)";
+    NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
+    NSRange range = NSMakeRange(0, self.length);
+    NSString *string = [regularExpression stringByReplacingMatchesInString:self options:NSMatchingReportProgress range:range withTemplate:@"$1"];
     
-    return result;
+    return string;
 }
 
-- (NSString *)clearNullStringValueOfServer
+- (NSString *)stringByTrimmingLeadingAndTrailingWhiteSpaces
 {
-    NSString *result = [self stringByReplacingOccurrencesOfString:@"null" withString:[NSString string]];
+    NSString *pattern = @"(?:^\\s+)|(?:\\s+$)";
+    NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
+    NSRange range = NSMakeRange(0, self.length);
+    NSString *string = [regularExpression stringByReplacingMatchesInString:self options:NSMatchingReportProgress range:range withTemplate:@"$1"];
     
-    return result;
+    return string;
 }
 
-- (NSString *)clearPlaceholderStringValueOfServer
+- (NSString *)stringByAppendingTheString:(NSString *)string
 {
-    NSString *result = [NSString string];
-    if (self.length > 0) {
-        NSString *pattern = @"<\\[<[\\w]*>\\]>";
-        NSError *error = nil;
-        NSRange range = NSMakeRange(0, self.length - 1);
-        NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
-//        NSArray *maches = [regularExpression matchesInString:self options:NSMatchingReportProgress range:range];
-//        for (NSTextCheckingResult *result in maches) {
-//            DLog(@"%@",[self substringWithRange:result.range]);
-//        }
-        
-        result = [regularExpression stringByReplacingMatchesInString:self options:NSMatchingReportProgress range:range withTemplate:[NSString string]];
+    NSString *result = nil;
+    @try {
+        result = [self stringByAppendingString:string];
     }
-    
-    return result;
+    @catch (NSException *exception) {
+//        NSLog(@"%@", exception.reason);
+        result = self;
+    }
+    @finally {
+        return result;
+    }
 }
 
 - (NSString *)stringByReplacingOccurrencesOfString:(NSString *)target withTheString:(NSString *)replacement
@@ -79,7 +76,7 @@
         string = [self stringByReplacingOccurrencesOfString:target withString:replacement];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+//        NSLog(@"%@", exception.reason);
         string = self;
     }
     @finally {
@@ -92,12 +89,6 @@
  @"HH:mm:ss"
  */
 
-- (NSDate *)dateValue
-{
-    NSDate *date = [self dateValueFromDateFormat:kDefaultFromDateFormat];
-    return date;
-}
-
 - (NSDate *)dateValueFromDateFormat:(NSString *)dateFormat
 {
     NSDate *date = [NSDate date];
@@ -109,8 +100,6 @@
         
         if ([dateFormat isKindOfClass:[NSString class]]) {
             [dateFormatter setDateFormat:dateFormat];
-        } else {
-            [dateFormatter setDateFormat:kDefaultFromDateFormat];
         }
         
         [dateFormatter localizeSymbols];
@@ -175,7 +164,7 @@
         result = [dateFormatter dateFromString:self];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
         result = [NSDate date];
     }
     @finally {
@@ -195,6 +184,18 @@
     return [self matchWithPattern:pattern];
 }
 
+- (BOOL)isValidPhoneNumber
+{
+    NSString *pattern = @".*\\d+.*";
+    return [self matchWithPattern:pattern];
+}
+
+- (BOOL)matchWithPattern:(NSString *)pattern
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+    return [predicate evaluateWithObject:self];
+}
+
 - (BOOL)empty
 {
     return [[self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0;
@@ -203,6 +204,15 @@
 - (NSString *)UTF8EncodedURLString
 {
     return encodedURLStringWithEncoding(self, NSUTF8StringEncoding);
+}
+- (NSString *)stringByReplacingPercentEscapesUsingUTF8Encoding
+{
+    return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)stringByReplacingPercentEscapesUsingUTF8EncodingAndClearNull
+{
+    return [[self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] noneNullStringValue];
 }
 
 - (CGFloat)heightWithFont:(UIFont *)font constrainedToWidth:(CGFloat)width
@@ -223,12 +233,6 @@
 }
 
 #pragma mark - Private
-
-- (BOOL)matchWithPattern:(NSString *)pattern
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
-    return [predicate evaluateWithObject:self];
-}
 
 static NSString * encodedURLStringWithEncoding(NSString *string, NSStringEncoding encoding)
 {

@@ -15,6 +15,7 @@
 #import "NSManagedObjectContext+Easy.h"
 #import "Macro.h"
 
+static char ExtraUserInfoKey;
 static char SafeHandlerKey;
 static char SafeHandlerDateKey;
 
@@ -49,22 +50,42 @@ inline BOOL systemVersionGreaterThanOrEqualTo(CGFloat value)
     return result;
 }
 
-NSString *NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate)
+inline BOOL floatEqualToFloat(float float1, float float2)
+{
+    return fabsf(float1 - float2) <= pow(10, - 6);
+}
+
+inline BOOL floatEqualToFloatWithAccuracyExponent(float float1, float float2 ,int accuracyExponent)
+{
+    return fabsf(float1 - float2) <= pow(10, - accuracyExponent);
+}
+
+inline BOOL doubleEqualToDouble(double double1, double double2)
+{
+    return fabs(double1 - double2) <= pow(10, - 6);
+}
+
+inline BOOL doubleEqualToDoubleWithAccuracyExponent(double double1, double double2 ,int accuracyExponent)
+{
+    return fabs(double1 - double2) <= pow(10, - accuracyExponent);
+}
+
+inline NSString *NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate)
 {
     return [NSString stringWithFormat:@"latitude:%lf\tlongitude:%lf",coordinate.latitude,coordinate.longitude];
 }
 
-NSString *NSStringFromMKCoordinateSpan(MKCoordinateSpan span)
+inline NSString *NSStringFromMKCoordinateSpan(MKCoordinateSpan span)
 {
     return [NSString stringWithFormat:@"latitudeDelta:%lf\tlongitudeDelta:%lf",span.latitudeDelta,span.longitudeDelta];
 }
 
-NSString *NSStringFromMKCoordinateRegion(MKCoordinateRegion region)
+inline NSString *NSStringFromMKCoordinateRegion(MKCoordinateRegion region)
 {
     return [NSString stringWithFormat:@"center:%@\nspan:%@",NSStringFromCLLocationCoordinate2D(region.center),NSStringFromMKCoordinateSpan(region.span)];
 }
 
-NSString *NSStringFromCGSize(CGSize size)
+inline NSString *NSStringFromCGSize(CGSize size)
 {
     return [NSString stringWithFormat:@"width:%lf\theight:%lf",size.width,size.height];
 }
@@ -77,6 +98,18 @@ NSString *NSStringFromCGSize(CGSize size)
 @end
 
 @implementation NSObject (Easy)
+
+- (id)extraUserInfo
+{
+    return objc_getAssociatedObject(self, &ExtraUserInfoKey);
+}
+
+- (void)setExtraUserInfo:(id)extraUserInfo
+{
+    [self willChangeValueForKey:@"extraUserInfo"];
+    objc_setAssociatedObject(self, &ExtraUserInfoKey, extraUserInfo, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self didChangeValueForKey:@"extraUserInfo"];
+}
 
 #pragma mark - Value
 
@@ -287,13 +320,13 @@ NSString *NSStringFromCGSize(CGSize size)
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleIdentifierKey];
 }
 
-+ (NSString *)country
++ (NSString *)currentCountry
 {
-    NSString *country = [[NSLocale currentLocale] displayNameForKey:NSLocaleCountryCode value:[self countryCode]];
+    NSString *country = [[NSLocale currentLocale] displayNameForKey:NSLocaleCountryCode value:[self currentCountryCode]];
     return country;
 }
 
-+ (NSString *)countryCode
++ (NSString *)currentCountryCode
 {
     NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
     return countryCode;
@@ -341,14 +374,14 @@ NSString *NSStringFromCGSize(CGSize size)
     return [[self class] bundleIdentifier];
 }
 
-- (NSString *)country
+- (NSString *)currentCountry
 {
-    return [[self class] country];
+    return [[self class] currentCountry];
 }
 
-- (NSString *)countryCode
+- (NSString *)currentCountryCode
 {
-    return [[self class] countryCode];
+    return [[self class] currentCountryCode];
 }
 
 - (NSString *)launchImageName
@@ -510,7 +543,7 @@ NSString *NSStringFromCGSize(CGSize size)
             self.safeHandlerDate = now;
             handler();
         } else {
-            DLog(@"You wanna me to die ? -> No way !");
+            NSLog(@"You wanna me to die ? -> No way !");
         }
     }
 }
@@ -521,11 +554,25 @@ NSString *NSStringFromCGSize(CGSize size)
         [self removeObserver:observer forKeyPath:keyPath];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         
     }
+}
+
+- (void)addPreferredContentSizeChangedObservingWithHandler:(void (^)(void))handler
+{
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIContentSizeCategoryDidChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        if (handler) {
+            handler();
+        }
+    }];
+}
+
+- (void)removePreferredContentSizeChangedObserving
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIContentSizeCategoryDidChangeNotification object:nil];
 }
 
 @end

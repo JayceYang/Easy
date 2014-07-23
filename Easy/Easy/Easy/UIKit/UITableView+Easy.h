@@ -10,9 +10,15 @@
 
 @interface UITableView (Easy)
 
+@property (strong, nonatomic) UIDynamicAnimator *attachmentBehaviorAnimator;
+
 - (void)scrollToBottom;
 - (void)hideEmptyCells;
 - (void)reloadDataWithCompletion:(void(^)(void))completionBlock;
 - (void)configureBackgroundColorWithColor:(UIColor *)color;
+- (void)configureBackgroundWithImage:(UIImage *)image;
+
+//- (void)addAttachmentBehavior;
+//- (void)removeAttachmentBehavior;
 
 @end

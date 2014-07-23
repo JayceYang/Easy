@@ -22,7 +22,17 @@
 - (void)removeFromNavigationControllerAnimated:(BOOL)animated;
 
 - (void)configureEdgesForExtendedLayout;
+- (void)configureBackgroundColor;
 - (void)configureBackgroundForView:(UIView *)view image:(UIImage *)image;
+
+- (void)configureBackButton;
+- (void)configureBackButtonWithActionHandler:(void (^)(void))handler;
+- (void)configureLeftButtonWithActionHandler:(void (^)(void))handler;
+- (void)configureLeftButtonWithNormalImage:(UIImage *)noramlImage actionHandler:(void (^)(void))handler;
+- (void)configureLeftButtonWithNormalImage:(UIImage *)noramlImage highlightedImage:(UIImage *)highlightedImage actionHandler:(void (^)(void))handler;
+
+- (void)configureRightButtonWithNormalImage:(UIImage *)noramlImage actionHandler:(void (^)(void))handler;
+- (void)configureRightButtonWithNormalImage:(UIImage *)noramlImage highlightedImage:(UIImage *)highlightedImage actionHandler:(void (^)(void))handler;
 
 - (void)dialPhoneNumber:(NSString *)number;
 

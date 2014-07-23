@@ -17,12 +17,19 @@ NSString * valueWithFixedFractionDigits(CGFloat value, NSUInteger fractionDigits
 BOOL systemVersionGreaterThan(CGFloat value);
 BOOL systemVersionGreaterThanOrEqualTo(CGFloat value);
 
-inline NSString *NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate);
-inline NSString *NSStringFromMKCoordinateSpan(MKCoordinateSpan span);
-inline NSString *NSStringFromMKCoordinateRegion(MKCoordinateRegion region);
-inline NSString *NSStringFromCGSize(CGSize size);
+BOOL floatEqualToFloat(float float1, float float2);
+BOOL floatEqualToFloatWithAccuracyExponent(float float1, float float2 ,int accuracyExponent);
+BOOL doubleEqualToDouble(double double1, double double2);
+BOOL doubleEqualToDoubleWithAccuracyExponent(double double1, double double2 ,int accuracyExponent);
+
+NSString *NSStringFromCLLocationCoordinate2D(CLLocationCoordinate2D coordinate);
+NSString *NSStringFromMKCoordinateSpan(MKCoordinateSpan span);
+NSString *NSStringFromMKCoordinateRegion(MKCoordinateRegion region);
+NSString *NSStringFromCGSize(CGSize size);
 
 @interface NSObject (Easy)
+
+@property (strong, nonatomic) id extraUserInfo;
 
 /*
  Value
@@ -52,16 +59,16 @@ inline NSString *NSStringFromCGSize(CGSize size);
 + (NSString *)bundleName;
 + (NSString *)bundleDisplayName;
 + (NSString *)bundleIdentifier;
-+ (NSString *)country;
-+ (NSString *)countryCode;
++ (NSString *)currentCountry;
++ (NSString *)currentCountryCode;
 + (NSString *)launchImageName;
 
 - (NSString *)bundleVersion;
 - (NSString *)bundleName;
 - (NSString *)bundleDisplayName;
 - (NSString *)bundleIdentifier;
-- (NSString *)country;
-- (NSString *)countryCode;
+- (NSString *)currentCountry;
+- (NSString *)currentCountryCode;
 - (NSString *)launchImageName;
 
 /*
@@ -97,5 +104,12 @@ inline NSString *NSStringFromCGSize(CGSize size);
 - (void)performWithSafeHandler:(void (^)(void))handler duration:(NSTimeInterval)duration;
 
 - (void)removeObserver:(NSObject *)observer forTheKeyPath:(NSString *)keyPath;
+
+/*
+ Content Size Change
+ */
+
+- (void)addPreferredContentSizeChangedObservingWithHandler:(void (^)(void))handler;
+- (void)removePreferredContentSizeChangedObserving;
 
 @end

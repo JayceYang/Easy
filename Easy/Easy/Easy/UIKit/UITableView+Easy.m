@@ -6,7 +6,17 @@
 //  Copyright (c) 2013 Easy. All rights reserved.
 //
 
+#import <objc/runtime.h>
+
 #import "UITableView+Easy.h"
+
+static char TableViewAttachmentBehaviorAnimatorKey;
+
+@interface UITableView ()
+
+//@property (strong, nonatomic) UIDynamicAnimator *attachmentBehaviorAnimator;
+
+@end
 
 @implementation UITableView (Easy)
 
@@ -38,6 +48,39 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
     view.backgroundColor = self.backgroundColor;
     self.backgroundView = view;
+}
+
+- (void)configureBackgroundWithImage:(UIImage *)image
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.backgroundColor = self.backgroundColor;
+    self.backgroundView = imageView;
+}
+
+#pragma mark - AttachmentBehaviorAnimator
+
+- (UIDynamicAnimator *)attachmentBehaviorAnimator
+{
+    return objc_getAssociatedObject(self, &TableViewAttachmentBehaviorAnimatorKey);
+}
+
+- (void)setAttachmentBehaviorAnimator:(UIDynamicAnimator *)attachmentBehaviorAnimator
+{
+    [self willChangeValueForKey:@"attachmentBehaviorAnimator"];
+    objc_setAssociatedObject(self, &TableViewAttachmentBehaviorAnimatorKey, attachmentBehaviorAnimator, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [self didChangeValueForKey:@"attachmentBehaviorAnimator"];
+}
+
+- (void)addAttachmentBehavior
+{
+    if (self.attachmentBehaviorAnimator == nil) {
+        self.attachmentBehaviorAnimator = [[UIDynamicAnimator alloc] initWithReferenceView:self];
+    }
+}
+
+- (void)removeAttachmentBehavior
+{
+    [self.attachmentBehaviorAnimator removeAllBehaviors];
 }
 
 @end

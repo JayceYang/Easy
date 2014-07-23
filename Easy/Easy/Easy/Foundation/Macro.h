@@ -10,9 +10,9 @@
 #define Easy_Macro_h
 
 #ifdef DEBUG
-#define DLog(fmt, ...) NSLog((@"%s [LINE %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#define ELog(fmt, ...) NSLog((@"%s [LINE %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
-#define DLog(...)
+#define ELog(...)
 #endif
 
 #endif

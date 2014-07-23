@@ -15,7 +15,6 @@ static char ViewControllerToPushSafeKey;
 static char ViewControllerPushCompletionHandlerKey;
 static char MenuViewControllerKey;
 static char SplashImageViewKey;
-static char PresentingModeKey;
 
 @interface  NavigationControllerInfo: NSObject <UINavigationControllerDelegate>
 
@@ -83,28 +82,6 @@ static char PresentingModeKey;
 
 @implementation UINavigationController (Easy)
 
-#pragma mark - UIViewControllerRotation
-
-- (BOOL)shouldAutorotate
-{
-    if (self.presentingMode) {
-        return self.presentedViewController.shouldAutorotate;
-    } else {
-        return self.topViewController.shouldAutorotate;
-    }
-//    return self.topViewController.shouldAutorotate;
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    if (self.presentingMode) {
-        return self.presentedViewController.supportedInterfaceOrientations;
-    } else {
-        return self.topViewController.supportedInterfaceOrientations;
-    }
-//    return self.topViewController.supportedInterfaceOrientations;
-}
-
 #pragma mark - Splash image view 
 
 - (UIImageView *)splashImageView
@@ -155,23 +132,6 @@ static char PresentingModeKey;
     [self didChangeValueForKey:@"menuViewController"];
 }
 
-- (BOOL)presentingMode
-{
-    NSNumber *value = objc_getAssociatedObject(self, &PresentingModeKey);
-    if ([value isKindOfClass:[NSNumber class]]) {
-        return [value boolValue];
-    } else {
-        return NO;
-    }
-}
-
-- (void)setPresentingMode:(BOOL)presentingMode
-{
-    [self willChangeValueForKey:@"presentingMode"];
-    objc_setAssociatedObject(self, &PresentingModeKey, [NSNumber numberWithBool:presentingMode], OBJC_ASSOCIATION_COPY_NONATOMIC);
-    [self didChangeValueForKey:@"presentingMode"];
-}
-
 + (instancetype)navigationControllerWithRootViewControllerClass:(Class)rootViewControllerClass hasNib:(BOOL)hasNib
 {
     UINavigationController *navigationController = nil;
@@ -185,7 +145,7 @@ static char PresentingModeKey;
         navigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         return navigationController;
@@ -196,7 +156,7 @@ static char PresentingModeKey;
 {
     if (self.viewControllerToPush == nil) {
         self.viewControllerToPush = viewController;
-//        DLog(@"%@", NSStringFromClass([viewController class]));
+//        NSLog(@"%@", NSStringFromClass([viewController class]));
         [self pushViewController:viewController animated:animated];
     }
 }

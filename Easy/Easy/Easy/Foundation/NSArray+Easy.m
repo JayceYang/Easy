@@ -22,7 +22,7 @@
         result = [self objectAtIndex:index];
     }
     @catch (NSException *exception) {
-        DLog(@"%@",exception.reason);
+//        NSLog(@"%@",exception.reason);
     }
     @finally {
         return result;
@@ -56,7 +56,7 @@
         }];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         if (result.count == 0) {
@@ -78,8 +78,8 @@
         result = [self sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
             NSManagedObject *object = obj1;
             NSManagedObject *objectAnother = obj2;
-            NSNumber *number = [[object valueForKeyPath:path] numberValue];
-            NSNumber *numberAnother = [[objectAnother valueForKeyPath:path] numberValue];
+            NSNumber *number = [object valueForKeyPath:path];
+            NSNumber *numberAnother = [objectAnother valueForKeyPath:path];
             if (ascending) {
                 return [number compare:numberAnother];
             } else {
@@ -88,7 +88,7 @@
         }];
     }
     @catch (NSException *exception) {
-        DLog(@"%@", exception.reason);
+        NSLog(@"%@", exception.reason);
     }
     @finally {
         if (result.count == 0) {
