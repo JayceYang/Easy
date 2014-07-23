@@ -45,9 +45,9 @@ static char PropertyNamesMappingKey;
 
 + (NSArray *)managedObjectIDsForArray:(NSArray *)array insertIntoManagedObjectContext:(NSManagedObjectContext *)context
 {
-    NSMutableArray *result = nil;
+    NSMutableArray *result = [@[] mutableCopy];
     @try {
-        for (NSDictionary *dictionary in result) {
+        for (NSDictionary *dictionary in array) {
             NSManagedObjectID *managedObjectID = [self managedObjectIDForDictionary:dictionary insertIntoManagedObjectContext:context];
             [result addObject:managedObjectID];
         }

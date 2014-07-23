@@ -69,6 +69,9 @@
 		28916780185AF30F00142F81 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916758185AF30F00142F81 /* CoreData.framework */; };
 		28916788185AF30F00142F81 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 28916786185AF30F00142F81 /* InfoPlist.strings */; };
 		2891678A185AF30F00142F81 /* EasyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 28916789185AF30F00142F81 /* EasyTests.m */; };
+		28C88BD2197FAB5200383BDC /* MasterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C88BD1197FAB5200383BDC /* MasterTableViewCell.m */; };
+		28CFA1EF197F9F5100959EAD /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 28CFA1EE197F9F5100959EAD /* User.m */; };
+		28CFA1F2197F9F5200959EAD /* Post.m in Sources */ = {isa = PBXBuildFile; fileRef = 28CFA1F1197F9F5200959EAD /* Post.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -195,6 +198,12 @@
 		28916789185AF30F00142F81 /* EasyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EasyTests.m; sourceTree = "<group>"; };
 		2891683B185AFF3D00142F81 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		2892CAA4185AFFCD00848A99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		28C88BD0197FAB5200383BDC /* MasterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterTableViewCell.h; sourceTree = "<group>"; };
+		28C88BD1197FAB5200383BDC /* MasterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterTableViewCell.m; sourceTree = "<group>"; };
+		28CFA1ED197F9F5100959EAD /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		28CFA1EE197F9F5100959EAD /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
+		28CFA1F0197F9F5200959EAD /* Post.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Post.h; sourceTree = "<group>"; };
+		28CFA1F1197F9F5200959EAD /* Post.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Post.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -382,8 +391,14 @@
 				28916770185AF30F00142F81 /* MasterViewController.m */,
 				28916772185AF30F00142F81 /* DetailViewController.h */,
 				28916773185AF30F00142F81 /* DetailViewController.m */,
+				28C88BD0197FAB5200383BDC /* MasterTableViewCell.h */,
+				28C88BD1197FAB5200383BDC /* MasterTableViewCell.m */,
 				28916775185AF30F00142F81 /* Images.xcassets */,
 				2891676C185AF30F00142F81 /* Easy.xcdatamodeld */,
+				28CFA1F0197F9F5200959EAD /* Post.h */,
+				28CFA1F1197F9F5200959EAD /* Post.m */,
+				28CFA1ED197F9F5100959EAD /* User.h */,
+				28CFA1EE197F9F5100959EAD /* User.m */,
 				2891675B185AF30F00142F81 /* Supporting Files */,
 			);
 			path = Easy;
@@ -537,12 +552,14 @@
 				2879F92A197F960500304AB9 /* NSTimeZone+Easy.m in Sources */,
 				2879F91A197F960500304AB9 /* NSCalendar+Easy.m in Sources */,
 				2879F913197F960500304AB9 /* NSFetchedResultsController+Easy.m in Sources */,
+				28C88BD2197FAB5200383BDC /* MasterTableViewCell.m in Sources */,
 				2879F928197F960500304AB9 /* NSSet+Easy.m in Sources */,
 				2879F91C197F960500304AB9 /* NSDate+Easy.m in Sources */,
 				28916774185AF30F00142F81 /* DetailViewController.m in Sources */,
 				2879F916197F960500304AB9 /* ApplicationInfo.m in Sources */,
 				2879F934197F960500304AB9 /* UILabel+Easy.m in Sources */,
 				2879F93F197F960500304AB9 /* UIWebView+Easy.m in Sources */,
+				28CFA1F2197F9F5200959EAD /* Post.m in Sources */,
 				2879F931197F960500304AB9 /* UIColor+Easy.m in Sources */,
 				2879F935197F960500304AB9 /* UILocalNotification+Easy.m in Sources */,
 				28916771185AF30F00142F81 /* MasterViewController.m in Sources */,
@@ -564,6 +581,7 @@
 				2879F932197F960500304AB9 /* UIDevice+Easy.m in Sources */,
 				2879F937197F960500304AB9 /* UINavigationItem+Easy.m in Sources */,
 				2879F923197F960500304AB9 /* NSMutableArray+Easy.m in Sources */,
+				28CFA1EF197F9F5100959EAD /* User.m in Sources */,
 				2879F920197F960500304AB9 /* NSLocale+Easy.m in Sources */,
 				2891676E185AF30F00142F81 /* Easy.xcdatamodeld in Sources */,
 				28916765185AF30F00142F81 /* AppDelegate.m in Sources */,
@@ -710,11 +728,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Easy/Easy-Prefix.pch";
 				INFOPLIST_FILE = "Easy/Easy-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -724,10 +745,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Easy/Easy-Prefix.pch";
 				INFOPLIST_FILE = "Easy/Easy-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
