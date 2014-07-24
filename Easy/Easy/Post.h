@@ -15,6 +15,7 @@
 
 @property (nonatomic, retain) NSString * postID;
 @property (nonatomic, retain) NSString * text;
+@property (nonatomic, retain) NSString * trackName;
 @property (nonatomic, retain) User *user;
 
 + (void)globalTimelinePostsWithBlock:(void (^)(NSArray *posts, NSError *error))block;

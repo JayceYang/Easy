@@ -57,8 +57,7 @@
 		2891675F185AF30F00142F81 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2891675D185AF30F00142F81 /* InfoPlist.strings */; };
 		28916761185AF30F00142F81 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 28916760185AF30F00142F81 /* main.m */; };
 		28916765185AF30F00142F81 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 28916764185AF30F00142F81 /* AppDelegate.m */; };
-		28916768185AF30F00142F81 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28916766185AF30F00142F81 /* Main_iPhone.storyboard */; };
-		2891676B185AF30F00142F81 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28916769185AF30F00142F81 /* Main_iPad.storyboard */; };
+		28916768185AF30F00142F81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28916766185AF30F00142F81 /* Main.storyboard */; };
 		2891676E185AF30F00142F81 /* Easy.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2891676C185AF30F00142F81 /* Easy.xcdatamodeld */; };
 		28916771185AF30F00142F81 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28916770185AF30F00142F81 /* MasterViewController.m */; };
 		28916774185AF30F00142F81 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28916773185AF30F00142F81 /* DetailViewController.m */; };
@@ -196,8 +195,7 @@
 		28916785185AF30F00142F81 /* EasyTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EasyTests-Info.plist"; sourceTree = "<group>"; };
 		28916787185AF30F00142F81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		28916789185AF30F00142F81 /* EasyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EasyTests.m; sourceTree = "<group>"; };
-		2891683B185AFF3D00142F81 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		2892CAA4185AFFCD00848A99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		2892CAA4185AFFCD00848A99 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main.storyboard; sourceTree = "<group>"; };
 		28C88BD0197FAB5200383BDC /* MasterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterTableViewCell.h; sourceTree = "<group>"; };
 		28C88BD1197FAB5200383BDC /* MasterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterTableViewCell.m; sourceTree = "<group>"; };
 		28CFA1ED197F9F5100959EAD /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
@@ -385,8 +383,7 @@
 				28916793185AF32F00142F81 /* Easy */,
 				28916763185AF30F00142F81 /* AppDelegate.h */,
 				28916764185AF30F00142F81 /* AppDelegate.m */,
-				28916766185AF30F00142F81 /* Main_iPhone.storyboard */,
-				28916769185AF30F00142F81 /* Main_iPad.storyboard */,
+				28916766185AF30F00142F81 /* Main.storyboard */,
 				2891676F185AF30F00142F81 /* MasterViewController.h */,
 				28916770185AF30F00142F81 /* MasterViewController.m */,
 				28916772185AF30F00142F81 /* DetailViewController.h */,
@@ -521,9 +518,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2891676B185AF30F00142F81 /* Main_iPad.storyboard in Resources */,
 				28916776185AF30F00142F81 /* Images.xcassets in Resources */,
-				28916768185AF30F00142F81 /* Main_iPhone.storyboard in Resources */,
+				28916768185AF30F00142F81 /* Main.storyboard in Resources */,
 				2891675F185AF30F00142F81 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -624,20 +620,12 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		28916766185AF30F00142F81 /* Main_iPhone.storyboard */ = {
+		28916766185AF30F00142F81 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				2892CAA4185AFFCD00848A99 /* en */,
 			);
-			name = Main_iPhone.storyboard;
-			sourceTree = "<group>";
-		};
-		28916769185AF30F00142F81 /* Main_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2891683B185AFF3D00142F81 /* en */,
-			);
-			name = Main_iPad.storyboard;
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 		28916786185AF30F00142F81 /* InfoPlist.strings */ = {

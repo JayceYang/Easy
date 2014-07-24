@@ -36,16 +36,17 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-        
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
+    
     UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
     self.navigationItem.rightBarButtonItem = refreshButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
     self.posts = [self.managedObjectContext executeFetchManagedObjectForManagedObjectClass:[Post class]];
+//    [Post logAllInManagedObjectContext:self.managedObjectContext];
     
-    [self refresh];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self refresh];
+    });
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,8 +59,10 @@
 {
     __weak typeof(self) target = self;
     [Post globalTimelinePostsWithBlock:^(NSArray *posts, NSError *error) {
-        NSLog(@"%@", posts);
+//        NSLog(@"%@", posts);
         target.posts = posts;
+//        target.posts = [self.managedObjectContext executeFetchManagedObjectForManagedObjectClass:[Post class]];
+//        [Post logAllInManagedObjectContext:self.managedObjectContext];
         [target.tableView reloadData];
     }];
 }
@@ -83,40 +86,42 @@
     return cell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // The table view should not be re-orderable.
-    return NO;
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    Post *object = [self.posts objectAtIndex:indexPath.row];
+    cell.userLabel.text = object.user.username;
+    cell.contentLabel.text = object.text;
+    // force layout
+    [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];
+//    [cell setNeedsLayout];
+//    [cell layoutIfNeeded];
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
     return height;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        NSManagedObject *object = [self.posts objectAtIndex:indexPath.row];
-        self.detailViewController.detailItem = object;
-    }
-}
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+//        Post *object = [self.posts objectAtIndex:indexPath.row];
+//        self.detailViewController.detailItem = object.postID;
+//    }
+//}
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *object = [self.posts objectAtIndex:indexPath.row];
-        [[segue destinationViewController] setDetailItem:object];
+        Post *object = [self.posts objectAtIndex:indexPath.row];
+        [[segue destinationViewController] setDetailItem:object.postID];
     }
 }
 
 - (void)configureCell:(MasterTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
     Post *object = [self.posts objectAtIndex:indexPath.row];
-    cell.userLabel.text = object.user.username;
+    cell.userLabel.text = object.trackName;
     cell.contentLabel.text = object.text;
 }
 

@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+@class Post;
 
 @interface User : NSManagedObject
 
 @property (nonatomic, retain) NSString * userID;
 @property (nonatomic, retain) NSString * username;
-@property (nonatomic, retain) NSManagedObject *post;
+@property (nonatomic, retain) Post *post;
 
 @end

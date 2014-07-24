@@ -8,11 +8,23 @@
 
 #import "User.h"
 
+#import "Easy.h"
 
 @implementation User
 
 @dynamic userID;
 @dynamic username;
 @dynamic post;
+
+- (instancetype)initWithEntity:(NSEntityDescription *)entity insertIntoManagedObjectContext:(NSManagedObjectContext *)context
+{
+    self = [super initWithEntity:entity insertIntoManagedObjectContext:context];
+    if (self) {
+        // Initialization code
+        
+        [self makePropertyNamesMappingForKey:@"userID" sourceKey:@"id"];
+    }
+    return self;
+}
 
 @end

@@ -15,7 +15,21 @@
 
 @dynamic postID;
 @dynamic text;
+@dynamic trackName;
 @dynamic user;
+
+- (instancetype)initWithEntity:(NSEntityDescription *)entity insertIntoManagedObjectContext:(NSManagedObjectContext *)context
+{
+    self = [super initWithEntity:entity insertIntoManagedObjectContext:context];
+    if (self) {
+        // Initialization code
+        
+        [self makePropertyNamesMappingForKey:@"postID" sourceKey:@"trackId"];
+        [self makePropertyNamesMappingForKey:@"text" sourceKey:@"description"];
+        
+    }
+    return self;
+}
 
 + (NSOperationQueue *)sharedOperationQueue {
     static NSOperationQueue *_sharedProfileImageRequestOperationQueue = nil;
@@ -29,16 +43,19 @@
 }
 
 + (void)globalTimelinePostsWithBlock:(void (^)(NSArray *posts, NSError *error))block {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://api.app.net/stream/0/posts/stream/global"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://itunes.apple.com/cn/lookup?id=599957686&entity=software"]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         NSError *error = nil;
         NSDictionary *JSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
         if (error == nil) {
-            NSArray *postsFromResponse = [JSON valueForKeyPath:@"data"];
+            NSMutableArray *postsFromResponse = [[JSON valueForKeyPath:@"results"] mutableCopy];
+            [postsFromResponse removeObjectAtIndex:0];
             if (block) {
                 [[CoreDataStore privateQueueContext] deleteObjectsForEntityForManagedObjectClass:[Post class]];
                 NSArray *objectIDs = [Post managedObjectIDsForArray:postsFromResponse insertIntoManagedObjectContext:[CoreDataStore privateQueueContext]];
-                block([[CoreDataStore mainQueueContext] objectsWithObjectIDs:objectIDs], nil);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block([[CoreDataStore mainQueueContext] objectsWithObjectIDs:objectIDs], nil);
+                });
             }
         } else {
             NSLog(@"%@", error.localizedDescription);

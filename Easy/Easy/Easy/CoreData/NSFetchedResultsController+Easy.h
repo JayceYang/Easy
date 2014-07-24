@@ -8,7 +8,14 @@
 
 #import <CoreData/CoreData.h>
 
+typedef void (^FetchedResultsChangeHandler)(id changedObject, NSIndexPath *indexPath, NSFetchedResultsChangeType type, NSIndexPath *newIndexPath);
+
 @interface NSFetchedResultsController (Easy)
+
+@property (readonly, copy, nonatomic) FetchedResultsChangeHandler fetchedResultsChangeHandler;
+
+- (void)watchFetchedResultsChangeWithHandler:(FetchedResultsChangeHandler)handler;
+- (void)unwatchFetchedResultsChange;
 
 - (BOOL)performFetch;
 
