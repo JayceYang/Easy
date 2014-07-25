@@ -23,15 +23,6 @@
 
 @implementation MasterViewController
 
-- (void)awakeFromNib
-{
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.clearsSelectionOnViewWillAppear = NO;
-        self.preferredContentSize = CGSizeMake(320.0, 600.0);
-    }
-    [super awakeFromNib];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -44,9 +35,9 @@
     self.posts = [self.managedObjectContext executeFetchManagedObjectForManagedObjectClass:[Post class]];
 //    [Post logAllInManagedObjectContext:self.managedObjectContext];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self refresh];
-    });
+    [self refresh];
+    
+    [NSTimer scheduledTimerWithTimeInterval:6 target:self selector:@selector(changeValue) userInfo:nil repeats:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -65,6 +56,16 @@
 //        [Post logAllInManagedObjectContext:self.managedObjectContext];
         [target.tableView reloadData];
     }];
+}
+
+- (void)changeValue
+{
+    Post *object = [self.posts objectAtIndex:0];
+    NSMutableDictionary *value = [object.dictionaryValue mutableCopy];
+    value[@"description"] = [[NSDate date] stringValueWithStyleShort];
+    [object updateValuesForKeysWithDictionary:value];
+    [self.tableView reloadData];
+//    ELog(@"%@", object.dictionaryValue);
 }
 
 #pragma mark - Table View
@@ -100,14 +101,6 @@
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
     return height;
 }
-
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//        Post *object = [self.posts objectAtIndex:indexPath.row];
-//        self.detailViewController.detailItem = object.postID;
-//    }
-//}
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {

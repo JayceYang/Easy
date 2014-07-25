@@ -19,6 +19,7 @@
 + (NSArray *)managedObjectIDsForArray:(NSArray *)array insertIntoManagedObjectContext:(NSManagedObjectContext *)context;
 
 - (NSDictionary *)dictionaryValue;
+- (void)updateValuesForKeysWithDictionary:(NSDictionary *)keyedValues;
 
 - (void)makePropertyNamesMappingForKey:(NSString *)key sourceKey:(NSString *)sourceKey;
 
