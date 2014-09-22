@@ -33,7 +33,6 @@
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     
     self.posts = [self.managedObjectContext executeFetchManagedObjectForManagedObjectClass:[Post class]];
-//    [Post logAllInManagedObjectContext:self.managedObjectContext];
     
     [self refresh];
     
