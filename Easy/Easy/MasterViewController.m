@@ -64,7 +64,6 @@
     value[@"description"] = [[NSDate date] stringValueWithStyleShort];
     [object updateValuesForKeysWithDictionary:value];
     [self.tableView reloadData];
-//    ELog(@"%@", object.dictionaryValue);
 }
 
 #pragma mark - Table View
