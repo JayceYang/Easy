@@ -15,6 +15,8 @@
 #import "User.h"
 #import "MasterTableViewCell.h"
 
+static NSString * const ReuseIdentifier = @"Cell";
+
 @interface MasterViewController ()
 
 @property (copy, nonatomic) NSArray *posts;
@@ -35,14 +37,16 @@
     self.posts = [self.managedObjectContext executeFetchManagedObjectForManagedObjectClass:[Post class]];
     
     [self refresh];
-    
-    [NSTimer scheduledTimerWithTimeInterval:6 target:self selector:@selector(changeValue) userInfo:nil repeats:YES];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self.tableView reloadData];
 }
 
 - (void)refresh
@@ -55,15 +59,6 @@
 //        [Post logAllInManagedObjectContext:self.managedObjectContext];
         [target.tableView reloadData];
     }];
-}
-
-- (void)changeValue
-{
-    Post *object = [self.posts objectAtIndex:0];
-    NSMutableDictionary *value = [object.dictionaryValue mutableCopy];
-    value[@"description"] = [[NSDate date] stringValueWithStyleShort];
-    [object updateValuesForKeysWithDictionary:value];
-    [self.tableView reloadData];
 }
 
 #pragma mark - Table View
@@ -80,24 +75,23 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ReuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
-    Post *object = [self.posts objectAtIndex:indexPath.row];
-    cell.userLabel.text = object.user.username;
-    cell.contentLabel.text = object.text;
+    MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ReuseIdentifier];
+    [self configureCell:cell atIndexPath:indexPath];
     // force layout
-    [cell setNeedsUpdateConstraints];
-    [cell updateConstraintsIfNeeded];
-//    [cell setNeedsLayout];
-//    [cell layoutIfNeeded];
+    
+    cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(self.tableView.bounds), CGRectGetHeight(cell.bounds));
+    
+    [cell setNeedsLayout];
+    [cell layoutIfNeeded];
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    return height;
+    return height + 1;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

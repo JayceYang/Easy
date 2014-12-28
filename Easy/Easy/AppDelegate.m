@@ -17,6 +17,21 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    if (YES) {
+        NSLog(@"1");
+        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            NSLog(@"2");
+        });
+        NSLog(@"3");
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            NSLog(@"1");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"2");
+            });
+            NSLog(@"3");
+        });
+    }
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
     MasterViewController *controller = (MasterViewController *)navigationController.topViewController;
     controller.managedObjectContext = [CoreDataStore mainQueueContext];

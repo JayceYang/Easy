@@ -46,16 +46,21 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://itunes.apple.com/cn/lookup?id=599957686&entity=software"]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         NSError *error = nil;
-        NSDictionary *JSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-        if (error == nil) {
-            NSMutableArray *postsFromResponse = [[JSON valueForKeyPath:@"results"] mutableCopy];
-            [postsFromResponse removeObjectAtIndex:0];
-            if (block) {
-                [[CoreDataStore privateQueueContext] deleteObjectsForEntityForManagedObjectClass:[Post class]];
-                NSArray *objectIDs = [Post managedObjectIDsForArray:postsFromResponse insertIntoManagedObjectContext:[CoreDataStore privateQueueContext]];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    block([[CoreDataStore mainQueueContext] objectsWithObjectIDs:objectIDs], nil);
-                });
+        if (data) {
+            NSDictionary *JSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+            if (error == nil) {
+                NSMutableArray *postsFromResponse = [[JSON valueForKeyPath:@"results"] mutableCopy];
+                [postsFromResponse removeObjectAtIndex:0];
+                if (block) {
+                    [[CoreDataStore privateQueueContext] deleteObjectsForEntityForManagedObjectClass:[Post class]];
+                    NSArray *objectIDs = [Post managedObjectIDsForArray:postsFromResponse insertIntoManagedObjectContext:[CoreDataStore privateQueueContext]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        block([[CoreDataStore mainQueueContext] objectsWithObjectIDs:objectIDs], nil);
+                    });
+                }
+            } else {
+                NSLog(@"%@", error.localizedDescription);
+                block(nil, error);
             }
         } else {
             NSLog(@"%@", error.localizedDescription);

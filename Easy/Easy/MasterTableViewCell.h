@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface MasterTableViewCell : UITableViewCell
+
 @property (weak, nonatomic) IBOutlet UILabel *userLabel;
 @property (weak, nonatomic) IBOutlet UILabel *contentLabel;
 
