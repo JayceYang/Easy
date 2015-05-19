@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		282AB0F51B0B7B56008B959A /* XMLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 282AB0F41B0B7B56008B959A /* XMLGenerator.m */; };
+		282AB0F61B0B7B56008B959A /* XMLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 282AB0F41B0B7B56008B959A /* XMLGenerator.m */; };
 		28916753185AF30F00142F81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916752185AF30F00142F81 /* Foundation.framework */; };
 		28916755185AF30F00142F81 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916754185AF30F00142F81 /* CoreGraphics.framework */; };
 		28916757185AF30F00142F81 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28916756185AF30F00142F81 /* UIKit.framework */; };
@@ -137,6 +139,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		282AB0F31B0B7B56008B959A /* XMLGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLGenerator.h; sourceTree = "<group>"; };
+		282AB0F41B0B7B56008B959A /* XMLGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLGenerator.m; sourceTree = "<group>"; };
 		2891674F185AF30F00142F81 /* Easy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Easy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28916752185AF30F00142F81 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		28916754185AF30F00142F81 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -463,6 +467,8 @@
 				28FD714E1B0B37B100038809 /* LanguageManager.m */,
 				28FD70C21B0B378300038809 /* XMLParser.h */,
 				28FD70C31B0B378300038809 /* XMLParser.m */,
+				282AB0F31B0B7B56008B959A /* XMLGenerator.h */,
+				282AB0F41B0B7B56008B959A /* XMLGenerator.m */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -635,6 +641,7 @@
 				28CFA1F2197F9F5200959EAD /* Post.m in Sources */,
 				28FD71011B0B378300038809 /* NSArray+Easy.m in Sources */,
 				28FD713F1B0B378300038809 /* UITableView+Easy.m in Sources */,
+				282AB0F51B0B7B56008B959A /* XMLGenerator.m in Sources */,
 				28FD71291B0B378300038809 /* EasyDraggableView.m in Sources */,
 				28FD71171B0B378300038809 /* NSOperation+Easy.m in Sources */,
 				28FD71391B0B378300038809 /* UILocalNotification+Easy.m in Sources */,
@@ -733,6 +740,7 @@
 				28FD71461B0B378300038809 /* UIToolbar+Easy.m in Sources */,
 				28FD71241B0B378300038809 /* NSManagedObject+Mapping.m in Sources */,
 				28FD71421B0B378300038809 /* UITableViewCell+Easy.m in Sources */,
+				282AB0F61B0B7B56008B959A /* XMLGenerator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

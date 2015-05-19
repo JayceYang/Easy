@@ -18,6 +18,35 @@
     // Override point for customization after application launch.
     [[CoreDataStore defaultStore] setup];
     [EntityMappingManager sharedManager];
+    
+    XMLDeclaration *declaration = [XMLDeclaration declarationWithVersion:@"1.0" encoding:@"utf-8"];
+    
+    XMLNode *categoryList  = [XMLNode nodeWithElementName:@" CategoryList"];
+//    categoryList.shouldWrapBefore = NO;
+//    categoryList.shouldWrapAfter = NO;
+    
+    XMLNode *category = [XMLNode nodeWithElementName:@"Category" attributes:@{@"ID": @"01"}];
+//    category.shouldWrapBefore = NO;
+//    category.shouldWrapAfter = YES;
+    [categoryList addChildNode:category];
+    
+    XMLNode *mainCategory = [XMLNode nodeWithElementName:@"MainCategory" elementValue:@"XML"];
+//    mainCategory.shouldWrapBefore = NO;
+//    mainCategory.shouldWrapAfter = YES;
+    [category addChildNode:mainCategory];
+    
+    XMLNode *description = [XMLNode nodeWithElementName:@"Description" elementValue:@"This is a list my XML articles."];
+    [category addChildNode:description];
+    
+    XMLNode *active = [XMLNode nodeWithElementName:@"Active" elementValue:@"true"];
+    active.shouldWrapBefore = NO;
+    [category addChildNode:active];
+    
+    XMLGenerator *generator = [XMLGenerator generatorWithDeclaration:declaration rootNode:categoryList];
+    NSLog(@"Generator:\n%@", [generator stringValue]);
+//    NSLog(@"Category's attributes dictionary:\n%@", [category attributes]);
+//    NSLog(@"Category's attributes string:\n%@", [category stringValueOfAttributes]);
+//    NSLog(@"Category and it's children:\n%@", [category stringValue]);
     return YES;
 }
 							

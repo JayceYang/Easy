@@ -83,7 +83,7 @@
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"NOT (postID IN %@)", latestIDs];
                 [managedObjectContext deleteObjectsForEntityForManagedObjectClass:[self class] predicate:predicate];
                 [managedObjectContext save];
-                [Post logAllInManagedObjectContext:managedObjectContext];
+//                [Post logAllInManagedObjectContext:managedObjectContext];
                 if (block) {
                     block(nil);
                 }

@@ -52,5 +52,6 @@
 #import "CIImage+Easy.h"
 #import "EasyDraggableView.h"
 #import "LanguageManager.h"
+#import "XMLGenerator.h"
 
 #endif
