@@ -119,7 +119,7 @@
     NSKeyedUnarchiver *keyedUnarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
     ApplicationInfo *value = [keyedUnarchiver decodeObjectForKey:NSStringFromClass([self class])];
     [keyedUnarchiver finishDecoding];
-    ELog(@"UUID:%@\tCurrent Symbol:%@\tCurrency Code:%@", value.UUID, value.currencySymbol, value.currencyCode);
+    ELog(@"UUID:%@", value.UUID);
     
     return value;
 }

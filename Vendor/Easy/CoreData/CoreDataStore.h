@@ -16,15 +16,23 @@
 
 @interface CoreDataStore : NSObject
 
-@property (copy, nonatomic) NSString *modelFileName;        //Default is CFBundleName
+@property (readonly, nonatomic) NSUInteger referenceCount;
+@property (readonly, nonatomic) NSCondition *referenceCountCondition;
 
 + (instancetype)defaultStore;
-- (void)reset;
 
-+ (NSPersistentStoreCoordinator *)persistentStoreCoordinator;
+- (void)setup;
+- (void)clean;
+- (void)destroy;
+- (void)reset;  // Calls 'destroy' first, and then calls 'setup'
+
++ (dispatch_queue_t)privateQueue;
 + (NSManagedObjectModel *)managedObjectModel;
++ (NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 + (NSManagedObjectContext *)mainQueueContext;
 + (NSManagedObjectContext *)privateQueueContext;
++ (NSManagedObjectContext *)newMainQueueContext;
++ (NSManagedObjectContext *)newPrivateQueueContext;
 + (NSURL *)persistentStoreURL;
 
 @end

@@ -8,9 +8,17 @@
 
 #import "NSManagedObject+Easy.h"
 
+#import "CoreDataStore.h"
 #import "NSManagedObjectContext+Easy.h"
 
 @implementation NSManagedObject (Easy)
+
++ (instancetype)managedObjectWithoutManagedObjectContext {
+    NSManagedObjectContext *managedObjectContext = [CoreDataStore mainQueueContext];
+    NSString *entityName = NSStringFromClass([self class]);
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
+    return [[self alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:nil];
+}
 
 + (void)logAllInManagedObjectContext:(NSManagedObjectContext *)context predicate:(NSPredicate *)predicate
 {
@@ -25,6 +33,7 @@
 
 + (void)logAllInManagedObjectContext:(NSManagedObjectContext *)context
 {
+#if DEBUG
     NSArray *existed = [context executeFetchManagedObjectForManagedObjectClass:self];
     NSUInteger counter = 0;
     NSLog(@"Found %lu items of %@ in total:", (unsigned long)existed.count, NSStringFromClass([self class]));
@@ -32,6 +41,7 @@
         NSLog(@"%lu:\t%@", (unsigned long)counter, object);
         counter ++ ;
     }
+#endif
 }
 
 - (void)logAll

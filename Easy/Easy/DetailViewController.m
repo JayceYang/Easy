@@ -12,7 +12,7 @@
 #import "User.h"
 #import "Post.h"
 
-@interface DetailViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface DetailViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -33,30 +33,6 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     self.managedObjectContext = [CoreDataStore mainQueueContext];
-    
-    __weak typeof(self) target = self;
-    [self.fetchedResultsController watchFetchedResultsChangeWithHandler:^(id changedObject, NSIndexPath *indexPath, NSFetchedResultsChangeType type, NSIndexPath *newIndexPath) {
-        UITableView *tableView = target.tableView;
-        
-        switch(type) {
-            case NSFetchedResultsChangeInsert:
-                [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-                break;
-                
-            case NSFetchedResultsChangeDelete:
-                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                break;
-                
-            case NSFetchedResultsChangeUpdate:
-                [target configureCell:[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
-                break;
-                
-            case NSFetchedResultsChangeMove:
-                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-                break;
-        }
-    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,7 +69,7 @@
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
     NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:nil];
-//    aFetchedResultsController.delegate = self;
+    aFetchedResultsController.delegate = self;
     self.fetchedResultsController = aFetchedResultsController;
     
 	[_fetchedResultsController performFetch];

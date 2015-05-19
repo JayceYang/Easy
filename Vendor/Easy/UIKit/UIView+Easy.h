@@ -62,6 +62,8 @@ typedef NS_OPTIONS(NSUInteger, BorderPosition) {
 - (void)configureWithBorderColor:(UIColor *)borderColor borderWidth:(CGFloat)borderWidth cornerRadius:(CGFloat)cornerRadius;
 
 - (void)addOneRetinaPixelBorderWithBorderColor:(UIColor *)borderColor;
+- (void)addOneRetinaPixelBorderWithBorderColor:(UIColor *)borderColor borderWidth:(CGFloat)borderWidth;
+- (void)removeOneRetinaPixelBorder;
 - (void)addBorderWithBorderPosition:(BorderPosition)position borderColor:(UIColor *)borderColor;
 - (void)removeBorderAtPosition:(BorderPosition)position;
 - (void)removeAllBorders;
@@ -72,5 +74,8 @@ typedef NS_OPTIONS(NSUInteger, BorderPosition) {
 - (void)removeAllSubviews;
 
 - (void)configureGeneralAppearanceWhenFetchingNoData;
+
+- (void)constrainEquallyToSuperview;
+- (void)constrainCentrallyToSuperview;
 
 @end

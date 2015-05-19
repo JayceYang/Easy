@@ -11,6 +11,7 @@
 
 #import "Macro.h"
 #import "CoreDataStore.h"
+#import "UIApplication+Easy.h"
 #import "UIAlertView+Easy.h"
 #import "UIViewController+Easy.h"
 #import "UIView+Easy.h"
@@ -50,5 +51,6 @@
 #import "LocationManager.h"
 #import "CIImage+Easy.h"
 #import "EasyDraggableView.h"
+#import "LanguageManager.h"
 
 #endif

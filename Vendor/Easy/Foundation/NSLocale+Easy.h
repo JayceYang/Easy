@@ -20,6 +20,7 @@
 + (NSString *)currentCountryCodeLowercaseString;
 + (NSString *)currentLanguageCode;
 + (NSString *)currencySymbolFromCurrencyCode:(NSString *)code;
++ (NSString *)displayNameFromCountryCode:(NSString *)code;
 + (BOOL)inChina;
 
 + (NSArray *)countryNames;

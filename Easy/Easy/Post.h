@@ -18,6 +18,6 @@
 @property (nonatomic, retain) NSString * trackName;
 @property (nonatomic, retain) User *user;
 
-+ (void)globalTimelinePostsWithBlock:(void (^)(NSArray *posts, NSError *error))block;
++ (void)globalTimelinePostsWithBlock:(void (^)(NSError *error))block;
 
 @end

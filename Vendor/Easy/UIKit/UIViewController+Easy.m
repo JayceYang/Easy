@@ -104,73 +104,6 @@ static char RightButtonActionHandlerKey;
     }
 }
 
-#pragma mark - Background
-
-- (void)configureEdgesForExtendedLayout
-{
-    self.edgesForExtendedLayout = UIRectEdgeNone;
-}
-
-- (void)configureBackgroundColor
-{
-    self.view.backgroundColor = RGBColor(233, 234, 232);
-//    if ([self isKindOfClass:[UITableViewController class]]) {
-//        <#statements#>
-//    }
-}
-
-- (void)configureBackgroundForView:(UIView *)view image:(UIImage *)image
-{
-    UIImageView *imageView = nil;
-    if ([view isKindOfClass:[UIImageView class]]) {
-        imageView = (UIImageView *)view;
-    } else if ([view isKindOfClass:[UITableView class]]) {
-        imageView = [[UIImageView alloc] initWithImage:image];
-        imageView.backgroundColor = [UIColor clearColor];
-        [(UITableView *)view setBackgroundView:imageView];
-    } else {
-        imageView = [[UIImageView alloc] initWithImage:image];
-        imageView.backgroundColor = [UIColor clearColor];
-        imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        imageView.frame = view.bounds;
-        [view addSubview:imageView];
-        [view sendSubviewToBack:imageView];
-    }
-}
-
-- (void)configureBackButton
-{
-    [self configureBackButtonWithActionHandler:nil];
-}
-
-- (void)configureBackButtonWithActionHandler:(void (^)(void))handler
-{
-    self.navigationItem.title = [NSString string];
-    return;
-    if (handler) {
-        [self configureLeftButtonWithActionHandler:handler];
-    } else {
-        UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"back_button_ transparent_normal.png"];
-        backButton.frame = CGRectMake(0, 0, image.size.width, image.size.height);
-        [backButton setImage:image forState:UIControlStateNormal];
-        [backButton setImage:[UIImage imageNamed:@"back_button_ transparent_highlighted.png"] forState:UIControlStateHighlighted];
-        [backButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-//        self.navigationController.interactivePopGestureRecognizer.delegate = (id <UIGestureRecognizerDelegate>)self;
-    }
-}
-
-- (void)back
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)configureLeftButtonWithActionHandler:(void (^)(void))handler
-{
-    [self configureLeftButtonWithNormalImage:[UIImage imageNamed:@"back_button_ transparent_normal.png"] highlightedImage:[UIImage imageNamed:@"back_button_ transparent_highlighted.png"] actionHandler:handler];
-}
-
 - (void)configureLeftButtonWithNormalImage:(UIImage *)noramlImage actionHandler:(void (^)(void))handler
 {
     [self configureLeftButtonWithNormalImage:noramlImage highlightedImage:nil actionHandler:handler];
@@ -241,33 +174,15 @@ static char RightButtonActionHandlerKey;
             [webView loadRequest:[NSURLRequest requestWithURL:URL]];
             [self.view addSubview:webView];
 #else
-            NSString *message = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"Call", nil), number];
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:message delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:NSLocalizedString(@"Confirm", nil), nil];
-            //        __weak typeof(self) target = self;
-            [alert showWithHandler:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            NSString *message = [NSString stringWithFormat:@"%@ %@", LocalizedString(@"Call", nil), number];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message message:nil delegate:nil cancelButtonTitle:LocalizedString(@"Cancel", nil) otherButtonTitles:LocalizedString(@"Confirm", nil), nil];
+            [alert showWithCompletionHandler:^(UIAlertView *alertView, NSInteger buttonIndex) {
                 if (buttonIndex != alert.cancelButtonIndex) {
                     [[UIApplication sharedApplication] openURL:URL];
                 }
             }];
 #endif
         }
-    }
-}
-
-- (void)removeFromNavigationControllerAnimated:(BOOL)animated
-{
-    UINavigationController *navigationController = [[UIApplication sharedApplication] currentNavigationController];
-    if ([navigationController isKindOfClass:[UINavigationController class]]) {
-        NSMutableArray *allViewControllers = [NSMutableArray arrayWithArray:navigationController.viewControllers];
-        for (UIViewController *viewController in allViewControllers) {
-            if (viewController == self) {
-                [allViewControllers removeObject:self];
-                break;
-            }
-        }
-        [navigationController setViewControllers:allViewControllers animated:animated];
-    } else {
-        ELog();
     }
 }
 

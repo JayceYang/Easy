@@ -8,6 +8,8 @@
 
 #import "NSDateFormatter+Easy.h"
 
+#import "Easy.h"
+
 @implementation NSDateFormatter (Easy)
 
 - (NSDateFormatter *)englishLocaleDateFormatter
@@ -25,7 +27,7 @@
         NSArray *shortMonthSymbols = [self englishLocaleDateFormatter].shortMonthSymbols;
         NSMutableArray *shortMonthSymbolsLocalized = [NSMutableArray array];
         for (NSString *shortMonthSymbol in shortMonthSymbols) {
-            [shortMonthSymbolsLocalized addObject:NSLocalizedString(shortMonthSymbol, nil)];
+            [shortMonthSymbolsLocalized addObject:LocalizedString(shortMonthSymbol, nil)];
         }
         self.shortMonthSymbols = shortMonthSymbolsLocalized;
     }
@@ -35,7 +37,7 @@
         NSArray *shortWeekdaySymbols = [self englishLocaleDateFormatter].shortWeekdaySymbols;
         NSMutableArray *shortWeekdaySymbolsLocalized = [NSMutableArray array];
         for (NSString *shortWeekdaySymbol in shortWeekdaySymbols) {
-            [shortWeekdaySymbolsLocalized addObject:NSLocalizedString(shortWeekdaySymbol, nil)];
+            [shortWeekdaySymbolsLocalized addObject:LocalizedString(shortWeekdaySymbol, nil)];
         }
         self.shortWeekdaySymbols = shortWeekdaySymbolsLocalized;
     }
@@ -43,8 +45,8 @@
     // 12 hour style
     if ([self.dateFormat rangeOfString:@"a"].location != NSNotFound) {
         NSDateFormatter *dateFormatterForAMPM = [self englishLocaleDateFormatter];
-        self.AMSymbol = NSLocalizedString(dateFormatterForAMPM.AMSymbol, nil);
-        self.PMSymbol = NSLocalizedString(dateFormatterForAMPM.PMSymbol, nil);
+        self.AMSymbol = LocalizedString(dateFormatterForAMPM.AMSymbol, nil);
+        self.PMSymbol = LocalizedString(dateFormatterForAMPM.PMSymbol, nil);
     }
     
     

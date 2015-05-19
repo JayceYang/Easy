@@ -12,12 +12,16 @@
 
 + (NSString *)stringWithUnsignedInteger:(NSUInteger)value;
 + (NSString *)stringWithInteger:(NSInteger)value;
++ (NSString *)stringWithFloat:(float)value;
++ (NSString *)stringWithDouble:(double)value;
 
 - (NSNumber *)numberValue;
 
 /* Replace all "null" and (null), and return the result
  */
 - (NSString *)noneNullStringValue;
+
+- (NSString *)nonAlphaStringValue;
 
 /* Trim the input string by removing leading and trailing white spaces, and return the result
  */
@@ -37,6 +41,8 @@
 - (NSDate *)dateValueWithStylePreferedDateOnly;
 - (NSDate *)dateValueWithStylePreferedTimeOnly;
 
+- (NSDate *)timeStampDate;
+
 - (BOOL)isValidNumber;
 - (BOOL)isValidEmail;
 - (BOOL)isValidPhoneNumber;   //Contains one number at least
@@ -48,7 +54,8 @@
 - (NSString *)stringByReplacingPercentEscapesUsingUTF8Encoding;
 - (NSString *)stringByReplacingPercentEscapesUsingUTF8EncodingAndClearNull;
 
-- (CGFloat)heightWithFont:(UIFont *)font constrainedToWidth:(CGFloat)width;
-- (CGFloat)heightWithFont:(UIFont *)font constrainedToSize:(CGSize)size;
+- (NSString *)MD5String;
+- (NSString *)SHA1String;
+- (NSString *)SHA256String;
 
 @end

@@ -25,6 +25,7 @@ inline NSString * valueWithDefaultFractionDigits(NSNumber *value)
     [formatter setMinimumIntegerDigits:1];
     [formatter setMinimumFractionDigits:kFractionDigitsDefault];
     [formatter setMaximumFractionDigits:kFractionDigitsDefault];
+    [formatter setDecimalSeparator:@"."];
     return [formatter stringFromNumber:value];
 }
 
@@ -34,6 +35,7 @@ inline NSString * valueWithFixedFractionDigits(NSNumber *value, NSUInteger fract
     [formatter setMinimumIntegerDigits:1];
     [formatter setMinimumFractionDigits:fractionDigits];
     [formatter setMaximumFractionDigits:fractionDigits];
+    [formatter setDecimalSeparator:@"."];
     return [formatter stringFromNumber:value];
 }
 
@@ -235,7 +237,9 @@ inline NSString *NSStringFromCGSize(CGSize size)
 - (NSString *)theStringValueWithDefaultValue:(NSString *)value
 {
     id sourceValue = self;
-    if ([sourceValue respondsToSelector:@selector(stringValue)]) {
+    if ([sourceValue isKindOfClass:[NSString class]]) {
+        return sourceValue;
+    } else if ([sourceValue respondsToSelector:@selector(stringValue)]) {
         return [sourceValue stringValue];
     } else {
         return value;
@@ -312,7 +316,7 @@ inline NSString *NSStringFromCGSize(CGSize size)
 
 + (NSString *)bundleVersion
 {
-    return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey];
+    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
 }
 
 + (NSString *)bundleName
@@ -477,23 +481,6 @@ inline NSString *NSStringFromCGSize(CGSize size)
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (UINavigationController *)currentNavigationController
-{
-    UINavigationController *navigationController = nil;
-    UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
-    UIViewController *rootViewController = keyWindow.rootViewController;
-    if ([rootViewController isKindOfClass:[UINavigationController class]]) {
-        navigationController = (UINavigationController *)rootViewController;
-    }
-    
-    return navigationController;
-}
-
-- (UINavigationController *)currentNavigationController
-{
-    return [[self class] currentNavigationController];
-}
-
 - (void (^)(void))safeHandler
 {
     return objc_getAssociatedObject(self, &SafeHandlerKey);
@@ -518,16 +505,15 @@ inline NSString *NSStringFromCGSize(CGSize size)
     [self didChangeValueForKey:@"safeHandlerDate"];
 }
 
-- (void)performBlockOnMainThread:(void (^)(void))handler
-{
+- (void)performBlockOnMainThread:(void (^)(void))block {
     if ([NSThread isMainThread]) {
-        if (handler) {
-            handler();
+        if (block) {
+            block();
         }
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (handler) {
-                handler();
+            if (block) {
+                block();
             }
         });
     }

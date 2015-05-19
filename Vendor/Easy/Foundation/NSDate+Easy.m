@@ -15,6 +15,7 @@
 #import "NSCalendar+Easy.h"
 #import "NSObject+Easy.h"
 #import "Macro.h"
+#import "LanguageManager.h"
 
 #import "ApplicationInfo.h"
 
@@ -31,22 +32,38 @@
     
     NSDateComponents *timeComponents = [calendar timeComponentsFromDate:time];
     timeComponents.timeZone = timeZone;
-    NSDate *result = [calendar dateByAddingComponents:timeComponents toDate:date options:NSCalendarWrapComponents];
+    NSDate *result = [calendar dateByAddingComponents:timeComponents toDate:date options:0];
     
     return result;
 }
 
-- (NSString *)stringValueFromDateFormat:(NSString *)dateFormat
-{
+/* 
+ Specifies a long style, typically with full text, such as “November 23, 1937” or “3:30:32 PM PST”.
+ */
+
+- (NSString *)stringValuePrefered {
+    return [self stringValueWithDateFormat:LocalizedString(@"MMM dd, yyyy, hh:mm:ss a", nil)];
+}
+
+- (NSString *)stringValuePreferedDateOnly {
+    return [self stringValueWithDateFormat:LocalizedString(@"MMM dd, yyyy", nil)];
+}
+
+- (NSString *)stringValuePreferedTimeOnly {
+    return [self stringValueWithDateFormat:LocalizedString(@"hh:mm:ss a", nil)];
+}
+
+- (NSString *)stringValueWithDateFormat:(NSString *)dateFormat {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeZone = [NSTimeZone defaultTimeZone];
-    dateFormatter.locale = [NSLocale currentLocale];
+    dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    dateFormatter.dateFormat = dateFormat;
     
-    if ([dateFormat isKindOfClass:[NSString class]]) {
-        [dateFormatter setDateFormat:dateFormat];
-    }
-    
-    [dateFormatter localizeSymbols];
+//    if ([dateFormat isKindOfClass:[NSString class]]) {
+//        [dateFormatter setDateFormat:dateFormat];
+//    }
+//    
+//    [dateFormatter localizeSymbols];
     
 //    NSString *result = [NSString string];
 //    
@@ -107,17 +124,21 @@
 
 - (NSString *)stringValueWithStylePrefered
 {
-    return [self stringValueWithDateFormatStyle:NSDateFormatterShortStyle];
+    return [self stringValueWithDateFormatStyle:NSDateFormatterLongStyle];
 }
 
 - (NSString *)stringValueWithStylePreferedDateOnly
 {
-    return [self stringValueForDateOnlyWithDateStyle:NSDateFormatterShortStyle];
+    return [self stringValueForDateOnlyWithDateStyle:NSDateFormatterLongStyle];
 }
 
 - (NSString *)stringValueWithStylePreferedTimeOnly
 {
-    return [self stringValueForTimeOnlyWithTimeStyle:NSDateFormatterShortStyle];
+    return [self stringValueForTimeOnlyWithTimeStyle:NSDateFormatterLongStyle];
+}
+
+- (NSString *)timeStampString {
+    return [NSString stringWithFormat:@"%ld", (long)[self timeIntervalSince1970]];
 }
 
 - (NSDate *)noneDaylightSavingTimeDate
@@ -137,7 +158,7 @@
 - (NSDate *)dateValueFromDateFormat:(NSString *)dateFormat
 {    
     if ([dateFormat isKindOfClass:[NSString class]]) {
-        NSString *dateString = [self stringValueFromDateFormat:dateFormat];
+        NSString *dateString = [self stringValueWithDateFormat:dateFormat];
         return [dateString dateValueFromDateFormat:dateFormat];
     } else {
         return [NSDate date];
@@ -242,10 +263,25 @@
 
 - (NSDate *)dateBySettingHour:(NSInteger)hour
 {
+    return [self dateBySetHour:@(hour) minute:nil second:nil];
+}
+
+- (NSDate *)dateBySetHour:(NSNumber *)hour minute:(NSNumber *)minute second:(NSNumber *)second {
+    if (!hour && !minute && !second) {
+        return self;
+    }
     NSCalendar *calendar = [NSCalendar currentCalendar];
     NSDateComponents *dateComponents = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
-    [dateComponents setHour:hour];
-	NSDate *date = [calendar dateFromComponents:dateComponents];
+    if (hour) {
+        [dateComponents setHour:hour.integerValue];
+    }
+    if (minute) {
+        [dateComponents setMinute:minute.integerValue];
+    }
+    if (second) {
+        [dateComponents setSecond:second.integerValue];
+    }
+    NSDate *date = [calendar dateFromComponents:dateComponents];
     return date;
 }
 
@@ -256,7 +292,7 @@
 	NSDate *midnight = [calendar dateFromComponents:offsetComponents];
     NSDateComponents *componentsToSubtract = [[NSDateComponents alloc] init];
     [componentsToSubtract setDay:interval];
-    NSDate *date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:NSCalendarWrapComponents];
+    NSDate *date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:0];
 
     return date;
 }
@@ -269,9 +305,57 @@
 	NSDate *midnight = [calendar dateFromComponents:offsetComponents];
     NSDateComponents *componentsToSubtract = [[NSDateComponents alloc] init];
     [componentsToSubtract setDay:interval];
-    NSDate *date = date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:NSCalendarWrapComponents];
+    NSDate *date = date = [calendar dateByAddingComponents:componentsToSubtract toDate:midnight options:0];
     
     return date;
+}
+
+- (NSDate *)startOfTheDate {
+    return [self dateBySetHour:@(0) minute:@(0) second:@(0)];
+}
+
+- (NSDate *)endOfTheDate {
+    return [self dateBySetHour:@(23) minute:@(59) second:@(59)];
+}
+
+- (NSDate *)startOfTheWeek {
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
+    NSDate *start;
+    NSTimeInterval interval;
+    [calendar rangeOfUnit:NSWeekCalendarUnit startDate:&start interval:&interval forDate:self];
+    //start holds now the first day of the week, according to locale (monday vs. sunday)
+    
+    return start;
+}
+
+- (NSDate *)endOfTheWeek {
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
+    NSDate *start;
+    NSTimeInterval interval;
+    [calendar rangeOfUnit:NSWeekCalendarUnit startDate:&start interval:&interval forDate:self];
+    //start holds now the first day of the week, according to locale (monday vs. sunday)
+    
+    return [start dateByAddingTimeInterval:interval - 1];
+}
+
+- (NSDate *)startOfTheMonth {
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
+    NSDate *start;
+    NSTimeInterval interval;
+    [calendar rangeOfUnit:NSMonthCalendarUnit startDate:&start interval:&interval forDate:self];
+    //start holds now the first day of the month
+    
+    return start;
+}
+
+- (NSDate *)endOfTheMonth {
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
+    NSDate *start;
+    NSTimeInterval interval;
+    [calendar rangeOfUnit:NSMonthCalendarUnit startDate:&start interval:&interval forDate:self];
+    //start holds now the first day of the month
+    
+    return [start dateByAddingTimeInterval:interval - 1];
 }
 
 - (NSInteger)thisYear

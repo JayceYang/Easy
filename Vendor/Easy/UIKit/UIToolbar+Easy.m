@@ -9,6 +9,7 @@
 #import <objc/runtime.h>
 
 #import "UIToolbar+Easy.h"
+#import "LanguageManager.h"
 
 static char ToolbarCancelHandler;
 static char ToolbarDoneHandler;
@@ -75,17 +76,17 @@ static char ToolbarNextHandler;
     switch (type) {
         case InputAccessoryViewTypeCancelDone:
         {
-            UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Cancel", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(cancel)];
-            UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(done)];
+            UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizedString(@"Cancel", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(cancel)];
+            UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizedString(@"Done", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(done)];
             UIBarButtonItem *spaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
             toolbar.items = [NSArray arrayWithObjects:cancelBarButtonItem, spaceBarButtonItem, doneBarButtonItem, nil];
         }
             break;
         case InputAccessoryViewTypePreviousNextDone:
         {
-            UIBarButtonItem *previousBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Previous", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(previous)];
-            UIBarButtonItem *nextBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(next)];
-            UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(done)];
+            UIBarButtonItem *previousBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizedString(@"Previous", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(previous)];
+            UIBarButtonItem *nextBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizedString(@"Next", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(next)];
+            UIBarButtonItem *doneBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizedString(@"Done", nil) style:UIBarButtonItemStyleBordered target:toolbar action:@selector(done)];
             UIBarButtonItem *spaceBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
             toolbar.items = [NSArray arrayWithObjects:previousBarButtonItem, nextBarButtonItem, spaceBarButtonItem, doneBarButtonItem, nil];
         }

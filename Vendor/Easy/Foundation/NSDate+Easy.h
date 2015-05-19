@@ -12,7 +12,10 @@
 
 + (id)dateWithDate:(NSDate *)date time:(NSDate *)time;
 
-- (NSString *)stringValueFromDateFormat:(NSString *)dateFormat;
+- (NSString *)stringValuePrefered;
+- (NSString *)stringValuePreferedDateOnly;
+- (NSString *)stringValuePreferedTimeOnly;
+- (NSString *)stringValueWithDateFormat:(NSString *)dateFormat;
 - (NSString *)stringValueWithDateFormatStyle:(NSDateFormatterStyle)style;
 - (NSString *)stringValueForDateOnlyWithDateStyle:(NSDateFormatterStyle)style;
 - (NSString *)stringValueForTimeOnlyWithTimeStyle:(NSDateFormatterStyle)style;
@@ -33,6 +36,8 @@
 - (NSString *)stringValueWithStylePreferedDateOnly;
 - (NSString *)stringValueWithStylePreferedTimeOnly;
 
+- (NSString *)timeStampString;
+
 - (NSDate *)noneDaylightSavingTimeDate;
 - (NSDate *)noneDaylightSavingTimeDateForDateComponents;
 - (NSDate *)dateValueFromDateFormat:(NSString *)dateFormat;
@@ -51,8 +56,18 @@
 - (NSDate *)midnight;
 - (NSDate *)midday;
 - (NSDate *)dateBySettingHour:(NSInteger)hour;
+- (NSDate *)dateBySetHour:(NSNumber *)hour minute:(NSNumber *)minute second:(NSNumber *)second;
 - (NSDate *)dateByAddingDayInterval:(NSInteger)interval;
 - (NSDate *)dateByAddingDayIntervalSinceNow:(NSInteger)interval;
+
+- (NSDate *)startOfTheDate;
+- (NSDate *)endOfTheDate;
+
+- (NSDate *)startOfTheWeek;
+- (NSDate *)endOfTheWeek;
+
+- (NSDate *)startOfTheMonth;
+- (NSDate *)endOfTheMonth;
 
 - (NSInteger)thisYear;
 - (NSInteger)thisMonth;

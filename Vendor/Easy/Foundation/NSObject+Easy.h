@@ -102,10 +102,7 @@ NSString *NSStringFromCGSize(CGSize size);
 - (void)clearUserDefaultsExceptForKeysContainsTheString:(NSString *)string;
 - (void)clearUserDefaultsExceptForKeysInGroup:(NSArray *)group;
 
-+ (UINavigationController *)currentNavigationController;
-- (UINavigationController *)currentNavigationController;
-
-- (void)performBlockOnMainThread:(void (^)(void))handler;
+- (void)performBlockOnMainThread:(void (^)(void))block;
 - (void)performWithSafeHandler:(void (^)(void))handler;
 - (void)performWithSafeHandler:(void (^)(void))handler duration:(NSTimeInterval)duration;
 

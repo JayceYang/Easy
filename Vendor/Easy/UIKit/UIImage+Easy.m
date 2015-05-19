@@ -80,7 +80,7 @@ NSString * const kExtensionJPEG          = @"jpeg";
 
 - (CGSize)sizeToFitSize:(CGSize)size
 {
-    if (!self || (NSInteger)fabsf(self.size.width) == 0 || (NSInteger)fabsf(self.size.height) == 0 || (NSInteger)fabsf(size.width) == 0 || (NSInteger)fabsf(size.height) == 0) {
+    if (!self || (NSInteger)fabs(self.size.width) == 0 || (NSInteger)fabs(self.size.height) == 0 || (NSInteger)fabs(size.width) == 0 || (NSInteger)fabs(size.height) == 0) {
         return CGSizeZero;
     }
     

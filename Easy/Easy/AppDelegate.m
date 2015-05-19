@@ -8,33 +8,16 @@
 
 #import "AppDelegate.h"
 
-#import "MasterViewController.h"
-
-#import "CoreDataStore.h"
+#import "Easy.h"
+#import "EntityMappingManager.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    if (YES) {
-        NSLog(@"1");
-        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            NSLog(@"2");
-        });
-        NSLog(@"3");
-    } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            NSLog(@"1");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"2");
-            });
-            NSLog(@"3");
-        });
-    }
-    UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
-    MasterViewController *controller = (MasterViewController *)navigationController.topViewController;
-    controller.managedObjectContext = [CoreDataStore mainQueueContext];
+    [[CoreDataStore defaultStore] setup];
+    [EntityMappingManager sharedManager];
     return YES;
 }
 							
@@ -63,21 +46,7 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Saves changes in the application's managed object context before the application terminates.
-    [self saveContext];
-}
-
-- (void)saveContext
-{
-    NSError *error = nil;
-    NSManagedObjectContext *managedObjectContext = [CoreDataStore mainQueueContext];
-    if (managedObjectContext != nil) {
-        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-             // Replace this implementation with code to handle the error appropriately.
-             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        } 
-    }
+    [[CoreDataStore mainQueueContext] save];
 }
 
 @end

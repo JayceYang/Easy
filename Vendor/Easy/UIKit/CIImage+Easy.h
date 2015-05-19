@@ -7,6 +7,7 @@
 //
 
 #import <CoreImage/CoreImage.h>
+#import <UIKit/UIKit.h>
 
 @interface CIImage (Easy)
 

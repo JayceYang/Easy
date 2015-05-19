@@ -13,8 +13,13 @@
 
 static char ViewControllerToPushSafeKey;
 static char ViewControllerPushCompletionHandlerKey;
-static char MenuViewControllerKey;
-static char SplashImageViewKey;
+
+@interface UINavigationController ()
+
+@property (copy, nonatomic) void (^viewControllerPushCompletionHandler)(void);
+@property (strong, nonatomic) UIViewController *viewControllerToPush;
+
+@end
 
 @interface  NavigationControllerInfo: NSObject <UINavigationControllerDelegate>
 
@@ -32,11 +37,6 @@ static char SplashImageViewKey;
         
     }
     return self;
-}
-
-- (void)dealloc
-{
-    
 }
 
 #pragma mark - Public
@@ -73,28 +73,7 @@ static char SplashImageViewKey;
 
 @end
 
-@interface UINavigationController ()
-
-//@property (copy, nonatomic) void (^viewControllerPushCompletionHandler)(void);
-//@property (strong, nonatomic) UIViewController *viewControllerToPush;
-
-@end
-
 @implementation UINavigationController (Easy)
-
-#pragma mark - Splash image view 
-
-- (UIImageView *)splashImageView
-{
-    return objc_getAssociatedObject(self, &SplashImageViewKey);
-}
-
-- (void)setSplashImageView:(UIImageView *)splashImageView
-{
-    [self willChangeValueForKey:@"splashImageView"];
-    objc_setAssociatedObject(self, &SplashImageViewKey, splashImageView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"splashImageView"];
-}
 
 - (UIViewController *)viewControllerToPush
 {
@@ -118,38 +97,6 @@ static char SplashImageViewKey;
     [self willChangeValueForKey:@"viewControllerPushCompletionHandler"];
     objc_setAssociatedObject(self, &ViewControllerPushCompletionHandlerKey, viewControllerPushCompletionHandler, OBJC_ASSOCIATION_COPY_NONATOMIC);
     [self didChangeValueForKey:@"viewControllerPushCompletionHandler"];
-}
-
-- (MenuViewController *)menuViewController
-{
-    return objc_getAssociatedObject(self, &MenuViewControllerKey);
-}
-
-- (void)setMenuViewController:(MenuViewController *)menuViewController
-{
-    [self willChangeValueForKey:@"menuViewController"];
-    objc_setAssociatedObject(self, &MenuViewControllerKey, menuViewController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"menuViewController"];
-}
-
-+ (instancetype)navigationControllerWithRootViewControllerClass:(Class)rootViewControllerClass hasNib:(BOOL)hasNib
-{
-    UINavigationController *navigationController = nil;
-    @try {
-        UIViewController *rootViewController = nil;
-        if (hasNib) {
-            rootViewController = [[rootViewControllerClass alloc] initWithNibName:NSStringFromClass(rootViewControllerClass) bundle:nil];
-        } else {
-            rootViewController = [[rootViewControllerClass alloc] initWithNibName:nil bundle:nil];
-        }
-        navigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"%@", exception.reason);
-    }
-    @finally {
-        return navigationController;
-    }
 }
 
 - (void)noneNestedPushViewController:(UIViewController *)viewController animated:(BOOL)animated

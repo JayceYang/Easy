@@ -56,12 +56,23 @@
     self.failureHandler = failureHandler;
     
     if (_corrective) {
+        // TODO: This will not work in iOS 8
         self.mapView = [[MKMapView alloc] init];
         _mapView.delegate = self;
         _mapView.showsUserLocation = YES;
     } else {
         self.locationManager = [[CLLocationManager alloc] init];
+        // Ref: http://stackoverflow.com/questions/19393458/ios7-core-location-not-updating
+        _locationManager = [[CLLocationManager alloc] init];
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        _locationManager.activityType = CLActivityTypeOther;
+        _locationManager.distanceFilter = kCLDistanceFilterNone;
+        _locationManager.pausesLocationUpdatesAutomatically = NO;
         _locationManager.delegate = self;
+        // Ref: http://stackoverflow.com/questions/24062509/ios-8-location-services-not-working
+        if ([[UIDevice currentDevice].systemVersion doubleValue] >= 8.0) {
+            [_locationManager requestWhenInUseAuthorization];
+        }
         [_locationManager startUpdatingLocation];
     }
 }

@@ -281,10 +281,18 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
 //    }
 }
 
-- (void)addOneRetinaPixelBorderWithBorderColor:(UIColor *)borderColor
-{
-    self.layer.borderWidth = 1 * 1.0f / [[UIScreen mainScreen] scale];
+- (void)addOneRetinaPixelBorderWithBorderColor:(UIColor *)borderColor {
+    [self addOneRetinaPixelBorderWithBorderColor:borderColor borderWidth:1];
+}
+
+- (void)addOneRetinaPixelBorderWithBorderColor:(UIColor *)borderColor borderWidth:(CGFloat)borderWidth {
+    self.layer.borderWidth = borderWidth * 1.0f / [[UIScreen mainScreen] scale];
     self.layer.borderColor = borderColor.CGColor;
+}
+
+- (void)removeOneRetinaPixelBorder {
+    self.layer.borderWidth = 0;
+    self.layer.borderColor = [UIColor clearColor].CGColor;
 }
 
 - (void)addBorderWithBorderPosition:(BorderPosition)position borderColor:(UIColor *)borderColor
@@ -315,7 +323,7 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
             [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
             [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
             [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-            [border addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
             
         }
             break;
@@ -325,8 +333,8 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
 //            border.frame = CGRectMake(0, CGRectGetHeight(self.bounds) - borderWidth, CGRectGetWidth(self.bounds), borderWidth);
             [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
             [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
-            [border addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
         }
             break;
             
@@ -334,9 +342,9 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
         {
 //            border.frame = CGRectMake(0, 0, borderWidth, CGRectGetHeight(self.bounds));
             [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
-            [border addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
         }
             break;
             
@@ -344,9 +352,9 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
         {
 //            border.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
             [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
-            [border addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:border attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
+            [self addConstraint:[NSLayoutConstraint constraintWithItem:border attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:borderWidth]];
         }
             break;
             
@@ -425,6 +433,29 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
     if ([self isKindOfClass:[UIButton class]]) {
         [(UIButton *)self setBackgroundImage:[UIImage imageFromColor:[UIColor grayColor]] forState:UIControlStateNormal];
     }
+}
+
+- (void)constrainEquallyToSuperview {
+    
+    NSDictionary *views = @{@"view": self};
+    //        NSDictionary *metrics = @{@"margin":@(margin)};
+    [self.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[view]-0-|" options:0 metrics:nil views:views]];
+    [self.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|" options:0 metrics:nil views:views]];
+    
+//    UIView *view = self.superview;
+//    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+//    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
+//    NSLayoutConstraint *width = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeWidth relatedBy:0 toItem:view attribute:NSLayoutAttributeWidth multiplier:1 constant:0];
+//    NSLayoutConstraint *height = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:0 toItem:view attribute:NSLayoutAttributeHeight multiplier:1 constant:0];
+//    NSArray *constraints = @[centerX, centerY, width, height];
+//    [view addConstraints:constraints];
+}
+
+- (void)constrainCentrallyToSuperview {
+    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:0 toItem:self.superview attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:0 toItem:self.superview attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
+    NSArray *constraints = @[centerX, centerY];
+    [self.superview addConstraints:constraints];
 }
 
 @end

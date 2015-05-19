@@ -48,7 +48,7 @@ typedef void(^UIAlertViewHandler)(UIAlertView *alertView, NSInteger buttonIndex)
  *
  * @param handler The handler that will be invoked in user interaction.
  */
-- (void)showWithHandler:(UIAlertViewHandler)handler;
+- (void)showWithCompletionHandler:(UIAlertViewHandler)handler;
 
 /**
  * Utility selector to show an alert with a title, a message and a button to dimiss.

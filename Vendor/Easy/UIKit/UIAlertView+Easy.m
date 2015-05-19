@@ -24,6 +24,7 @@
 #import <objc/runtime.h>
 
 #import "UIAlertView+Easy.h"
+#import "LanguageManager.h"
 
 /*
  * Runtime association key.
@@ -37,7 +38,7 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
 /*
  * Shows the receiver alert with the given handler.
  */
-- (void)showWithHandler:(UIAlertViewHandler)handler {
+- (void)showWithCompletionHandler:(UIAlertViewHandler)handler {
     
     objc_setAssociatedObject(self, kHandlerAssociatedKey, handler, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
@@ -72,10 +73,10 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
                                                     message:message
                                                    delegate:nil
-                                          cancelButtonTitle:NSLocalizedString(@"alertView_OKButtonTitle", nil)
+                                          cancelButtonTitle:LocalizedString(@"OK", nil)
                                           otherButtonTitles:nil];
     
-    [alert showWithHandler:handler];
+    [alert showWithCompletionHandler:handler];
 }
 
 /*
@@ -84,13 +85,13 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
 + (void)showErrorWithMessage:(NSString *)message
                      handler:(UIAlertViewHandler)handler {
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Error", nil)
                                                     message:message
                                                    delegate:nil
-                                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                          cancelButtonTitle:LocalizedString(@"OK", nil)
                                           otherButtonTitles:nil];
     
-    [alert showWithHandler:handler];
+    [alert showWithCompletionHandler:handler];
 }
 
 /*
@@ -99,13 +100,13 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
 + (void)showWarningWithMessage:(NSString *)message
                        handler:(UIAlertViewHandler)handler {
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning", nil)
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:LocalizedString(@"Warning", nil)
                                                     message:message
                                                    delegate:nil
-                                          cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                          cancelButtonTitle:LocalizedString(@"OK", nil)
                                           otherButtonTitles:nil];
     
-    [alert showWithHandler:handler];
+    [alert showWithCompletionHandler:handler];
 }
 
 /*
@@ -118,10 +119,10 @@ void *kHandlerAssociatedKey = @"kHandlerAssociatedKey";
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
                                                     message:message
                                                    delegate:nil
-                                          cancelButtonTitle:NSLocalizedString(@"No", nil)
-                                          otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+                                          cancelButtonTitle:LocalizedString(@"No", nil)
+                                          otherButtonTitles:LocalizedString(@"Yes", nil), nil];
     
-    [alert showWithHandler:handler];
+    [alert showWithCompletionHandler:handler];
 }
 
 @end

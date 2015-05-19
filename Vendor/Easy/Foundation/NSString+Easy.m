@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Easy. All rights reserved.
 //
 
+#import <CommonCrypto/CommonDigest.h>
+
 #import "NSString+Easy.h"
 
 #import "NSDate+Easy.h"
@@ -18,21 +20,28 @@
 
 #pragma mark - Public
 
-+ (NSString *)stringWithUnsignedInteger:(NSUInteger)value
-{
++ (NSString *)stringWithUnsignedInteger:(NSUInteger)value {
     return [NSString stringWithFormat:@"%ld", (unsigned long)value];
 }
 
-+ (NSString *)stringWithInteger:(NSInteger)value
-{
++ (NSString *)stringWithInteger:(NSInteger)value {
     return [NSString stringWithFormat:@"%ld", (long)value];
+}
+
++ (NSString *)stringWithFloat:(float)value {
+    return [NSString stringWithFormat:@"%.0f", value];
+}
+
++ (NSString *)stringWithDouble:(double)value {
+    return [NSString stringWithFormat:@"%.0lf", value];
 }
 
 - (NSNumber *)numberValue
 {
     if ([self isKindOfClass:[NSString class]]) {
         NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-        [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+        [numberFormatter setNumberStyle:NSNumberFormatterNoStyle];
+        [numberFormatter setDecimalSeparator:@"."];
         return [numberFormatter numberFromString:self];
     } else {
         return nil;
@@ -42,6 +51,15 @@
 - (NSString *)noneNullStringValue
 {
     NSString *pattern = @"(?:\\(null\\))|(?:null)";
+    NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
+    NSRange range = NSMakeRange(0, self.length);
+    NSString *string = [regularExpression stringByReplacingMatchesInString:self options:NSMatchingReportProgress range:range withTemplate:@"$1"];
+    
+    return string;
+}
+
+- (NSString *)nonAlphaStringValue {
+    NSString *pattern = @"(?:[a-z])";
     NSRegularExpression *regularExpression = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
     NSRange range = NSMakeRange(0, self.length);
     NSString *string = [regularExpression stringByReplacingMatchesInString:self options:NSMatchingReportProgress range:range withTemplate:@"$1"];
@@ -106,9 +124,6 @@
         if ([dateFormat isKindOfClass:[NSString class]]) {
             [dateFormatter setDateFormat:dateFormat];
         }
-        
-        [dateFormatter localizeSymbols];
-        
         date = [dateFormatter dateFromString:self];
 //        NSTimeInterval daylightSavingTimeOffset = [dateFormatter.timeZone daylightSavingTimeOffsetForDate:[NSDate date]];
 //        date = [date dateByAddingTimeInterval:daylightSavingTimeOffset];
@@ -177,6 +192,10 @@
     }
 }
 
+- (NSDate *)timeStampDate {
+    return [NSDate dateWithTimeIntervalSince1970:self.doubleValue];
+}
+
 - (BOOL)isValidNumber
 {
     NSString *pattern = @"^[0-9]*$";
@@ -185,9 +204,14 @@
 
 - (BOOL)isValidEmail
 {
-    NSString *pattern = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9]+\\.[A-Za-z]{2,}";
-//    NSString *pattern = @"\\A([^@\\s]+)@((?:[-a-z0-9]+\\.)+[a-z]{2,})\\z";//(?i)
-    return [self matchWithPattern:pattern];
+//    NSString *pattern = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9]+\\.[A-Za-z]{2,}";
+    /*
+     1.以非@、非空字符打头，重复至少1次
+     2.@
+     3.以组合“-、英文字母、数字重复至少1次，.，英文字母重复至少2次”结尾
+     */
+    NSString *pattern = @"^([^@\\s]+)@((?:[-a-z0-9]+\\.)+[a-z]{2,})$";
+    return [self matchWithPattern:pattern caseInsensitive:YES];
 }
 
 - (BOOL)isValidPhoneNumber
@@ -200,6 +224,17 @@
 {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
     return [predicate evaluateWithObject:self];
+}
+
+- (BOOL)matchWithPattern:(NSString *)pattern caseInsensitive:(BOOL)caseInsensitive
+{
+    if (caseInsensitive) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES[c] %@", pattern];
+        return [predicate evaluateWithObject:self];
+    } else {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+        return [predicate evaluateWithObject:self];
+    }
 }
 
 - (BOOL)empty
@@ -221,21 +256,43 @@
     return [[self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] noneNullStringValue];
 }
 
-- (CGFloat)heightWithFont:(UIFont *)font constrainedToWidth:(CGFloat)width
-{
-    CGFloat result = 0;
-    CGSize constraint = CGSizeMake(width, CGFLOAT_MAX);
-//    CGSize size = [self sizeWithFont:font constrainedToSize:constraint];
-//    CGSize size = [self sizeWithAttributes:@{NSFontAttributeName:font}];
-    CGSize size = [self boundingRectWithSize:constraint options:NSStringDrawingTruncatesLastVisibleLine attributes:@{NSFontAttributeName:font} context:nil].size;
-    result = size.height;
-    return result;
+#pragma mark - Hash
+
+- (NSString *)MD5String {
+    unsigned int outputLength = CC_MD5_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_MD5(self.UTF8String, [self UTF8Length], output);
+    return [self hexStringFromData:output length:outputLength];
 }
 
-- (CGFloat)heightWithFont:(UIFont *)font constrainedToSize:(CGSize)size
-{
-    CGFloat result = [self boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine attributes:@{NSFontAttributeName:font} context:nil].size.height;
-    return result;
+- (NSString *)SHA1String {
+    unsigned int outputLength = CC_SHA1_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_SHA1(self.UTF8String, [self UTF8Length], output);
+    return [self hexStringFromData:output length:outputLength];
+}
+
+- (NSString *)SHA256String {
+    unsigned int outputLength = CC_SHA256_DIGEST_LENGTH;
+    unsigned char output[outputLength];
+    
+    CC_SHA256(self.UTF8String, [self UTF8Length], output);
+    return [self hexStringFromData:output length:outputLength];
+}
+
+- (unsigned int)UTF8Length {
+    return (unsigned int)[self lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)hexStringFromData:(unsigned char *)data length:(unsigned int)length {
+    NSMutableString *hash = [NSMutableString stringWithCapacity:length * 2];
+    for (unsigned int i = 0; i < length; i++) {
+        [hash appendFormat:@"%02x", data[i]];
+        data[i] = 0;
+    }
+    return hash;
 }
 
 #pragma mark - Private

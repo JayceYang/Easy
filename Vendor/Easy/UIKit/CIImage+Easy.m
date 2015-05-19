@@ -28,7 +28,7 @@
 - (UIImage *)nonInterpolatedUIImageWitiScale:(CGFloat)scale
 {
     // Render the CIImage into a CGImage
-    CGImageRef cgImage = [[CIContext contextWithOptions:nil] createCGImage:self fromRect:self.extent];
+    CGImageRef cgImage = [[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer: @(YES)}] createCGImage:self fromRect:self.extent];
     
     // Now we'll rescale using CoreGraphics
     UIGraphicsBeginImageContext(CGSizeMake(self.extent.size.width * scale, self.extent.size.width * scale));

@@ -6,19 +6,22 @@
 //  Copyright (c) 2013年 Easy. All rights reserved.
 //
 
-#import <objc/runtime.h>
-
 #import "NSManagedObject+Mapping.h"
 
 #import "NSObject+Mapping.h"
 
-static char SourceKeyPathMappingKey;
-static char TargetKeyPathMappingKey;
+@interface EntityMapping ()
+
+@property (strong, nonatomic) NSMutableDictionary *mappingAttributes;
+@property (strong, nonatomic) NSMutableDictionary *transparentAttributes;
+@property (strong, nonatomic) NSMutableDictionary *transparentRelationshipsDuringSerialization;
+@property (strong, nonatomic) NSMutableDictionary *transparentAllRelationshipsDuringSerialization;
+@property (strong, nonatomic) NSMutableDictionary *includeRelationshipsDuringDeserialization;
+@property (strong, nonatomic) NSMutableDictionary *includeAllRelationshipsDuringDeserialization;
+
+@end
 
 @interface NSManagedObject ()
-
-@property (strong, nonatomic) NSMutableDictionary *sourcekeyPathMapping;
-@property (strong, nonatomic) NSMutableDictionary *targetKeyPathMapping;
 
 @end
 
@@ -26,45 +29,24 @@ static char TargetKeyPathMappingKey;
 
 #pragma mark - Public
 
-+ (NSManagedObjectID *)managedObjectIDForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context
-{
-    return [[self managedObjectForDictionary:dictionary insertIntoManagedObjectContext:context] objectID];
-}
-
-+ (NSArray *)managedObjectIDsForArray:(NSArray *)array insertIntoManagedObjectContext:(NSManagedObjectContext *)context
-{
-    NSMutableArray *result = [@[] mutableCopy];
-    @try {
-        for (NSDictionary *dictionary in array) {
-            NSManagedObjectID *managedObjectID = [self managedObjectIDForDictionary:dictionary insertIntoManagedObjectContext:context];
-            [result addObject:managedObjectID];
-        }
-    }
-    @catch (NSException *exception) {
-        NSLog(@"%@", exception.reason);
-    }
-    @finally {
-        return [result copy];
-    }
-}
-
-+ (instancetype)managedObjectForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context
-{
-    NSManagedObject *result = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class]) inManagedObjectContext:context];
-    
-    [result safeSetValuesForKeysWithDictionary:dictionary];
-    
-    return result;
-}
+#pragma mark - Serialization
 
 - (NSDictionary *)dictionaryValue
 {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    
     @try {
+        // Skip all relationships
+        BOOL transparentAll = [[[[EntityMapping sharedMapping] transparentAllRelationshipsDuringSerialization] objectForKey:NSStringFromClass([self class])] boolValue];
         NSDictionary *properties = [[self entity] propertiesByName];
         for (NSString *propertyName in properties) {
+            // Skip transparent attribute
+            BOOL transparent = [[[[[EntityMapping sharedMapping] transparentAttributes] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName] boolValue];
+            if (transparent) {
+                continue;
+            }
             id property = [properties objectForKey:propertyName];
-            NSString *targetKey = [[self targetKeyPathMapping] objectForKey:propertyName];
+            NSString *targetKey = [[[[EntityMapping sharedMapping] mappingAttributes] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName];
             if (![targetKey isKindOfClass:[NSString class]] || targetKey.length == 0) {
                 targetKey = propertyName;
             }
@@ -79,7 +61,12 @@ static char TargetKeyPathMappingKey;
                     value = [value stringValue];
                 }
                 [result setValue:value forKey:targetKey];
-            } else if ([property isKindOfClass:[NSRelationshipDescription class]]) {
+            } else if (!transparentAll && [property isKindOfClass:[NSRelationshipDescription class]]) {
+                // Skip transparent relationship
+                BOOL transparent = [[[[[EntityMapping sharedMapping] transparentRelationshipsDuringSerialization] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName] boolValue];
+                if (transparent) {
+                    continue;
+                }
                 NSRelationshipDescription *relationshipDescription = property;
                 id value = [self valueForKey:propertyName];
                 if (value == nil) {
@@ -112,57 +99,27 @@ static char TargetKeyPathMappingKey;
         NSLog(@"%@", exception.reason);
     }
     @finally {
-        return [result mutableCopy];
+        return [result copy];
     }
+}
+
+#pragma mark - Deserialization
+
++ (NSManagedObjectID *)managedObjectIDForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context {
+    return [[self managedObjectForDictionary:dictionary insertIntoManagedObjectContext:context] objectID];
+}
+
++ (instancetype)managedObjectForDictionary:(NSDictionary *)dictionary insertIntoManagedObjectContext:(NSManagedObjectContext *)context {
+    NSManagedObject *result = [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class]) inManagedObjectContext:context];
+    
+    [result safeSetValuesForKeysWithDictionary:dictionary];
+    
+    return result;
 }
 
 - (void)updateValuesForKeysWithDictionary:(NSDictionary *)keyedValues
 {
     [self safeSetValuesForKeysWithDictionary:keyedValues];
-}
-
-- (void)makePropertyNamesMappingForKey:(NSString *)key sourceKey:(NSString *)sourceKey
-{
-    if (self.sourcekeyPathMapping == nil) {
-        self.sourcekeyPathMapping = [NSMutableDictionary dictionary];
-    }
-    
-    [self.sourcekeyPathMapping setValue:sourceKey forKey:key];
-}
-
-- (void)makePropertyNamesMappingForKey:(NSString *)key targetKey:(NSString *)targetKey
-{
-    if (self.targetKeyPathMapping == nil) {
-        self.targetKeyPathMapping = [NSMutableDictionary dictionary];
-    }
-    
-    [self.targetKeyPathMapping setValue:targetKey forKey:key];
-}
-
-#pragma mark - Names Mapping
-
-- (NSMutableDictionary *)sourcekeyPathMapping
-{
-    return objc_getAssociatedObject(self, &SourceKeyPathMappingKey);
-}
-
-- (void)setSourcekeyPathMapping:(NSMutableDictionary *)sourcekeyPathMapping
-{
-    [self willChangeValueForKey:@"sourcekeyPathMapping"];
-    objc_setAssociatedObject(self, &SourceKeyPathMappingKey, sourcekeyPathMapping, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"sourcekeyPathMapping"];
-}
-
-- (NSMutableDictionary *)targetKeyPathMapping
-{
-    return objc_getAssociatedObject(self, &TargetKeyPathMappingKey);
-}
-
-- (void)setTargetKeyPathMapping:(NSMutableDictionary *)targetKeyPathMapping
-{
-    [self willChangeValueForKey:@"targetKeyPathMapping"];
-    objc_setAssociatedObject(self, &TargetKeyPathMappingKey, targetKeyPathMapping, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [self didChangeValueForKey:@"targetKeyPathMapping"];
 }
 
 #pragma mark - Private
@@ -218,11 +175,19 @@ static char TargetKeyPathMappingKey;
 - (NSDictionary *)dictionaryValueIgnoreRelationship:(NSRelationshipDescription *)relationship
 {
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    
     @try {
+        // Skip all relationships
+        BOOL transparentAll = [[[[EntityMapping sharedMapping] transparentAllRelationshipsDuringSerialization] objectForKey:NSStringFromClass([self class])] boolValue];
         NSDictionary *properties = [[self entity] propertiesByName];
         for (NSString *propertyName in properties) {
+            // Skip transparent attribute
+            BOOL transparent = [[[[[EntityMapping sharedMapping] transparentAttributes] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName] boolValue];
+            if (transparent) {
+                continue;
+            }
             id property = [properties objectForKey:propertyName];
-            NSString *targetKey = [[self targetKeyPathMapping] objectForKey:propertyName];
+            NSString *targetKey = [[[[EntityMapping sharedMapping] mappingAttributes] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName];
             if (![targetKey isKindOfClass:[NSString class]] || targetKey.length == 0) {
                 targetKey = propertyName;
             }
@@ -237,7 +202,12 @@ static char TargetKeyPathMappingKey;
                     value = [value stringValue];
                 }
                 [result setValue:value forKey:targetKey];
-            } else if ([property isKindOfClass:[NSRelationshipDescription class]]) {
+            } else if (!transparentAll && [property isKindOfClass:[NSRelationshipDescription class]]) {
+                // Skip transparent relationship
+                BOOL transparent = [[[[[EntityMapping sharedMapping] transparentRelationshipsDuringSerialization] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName] boolValue];
+                if (transparent) {
+                    continue;
+                }
                 NSRelationshipDescription *relationshipDescription = property;
                 NSEntityDescription *destinationEntity = [relationshipDescription destinationEntity];
                 NSString *destinationEntityName = [destinationEntity name];
@@ -274,7 +244,7 @@ static char TargetKeyPathMappingKey;
         NSLog(@"%@", exception.reason);
     }
     @finally {
-        return [result mutableCopy];
+        return [result copy];
     }
 }
 
@@ -285,15 +255,22 @@ static char TargetKeyPathMappingKey;
     NSManagedObjectContext *context = self.managedObjectContext;
     
     @try {
+        // Include all relationships
+        BOOL includeAll = [[[[EntityMapping sharedMapping] includeAllRelationshipsDuringDeserialization] objectForKey:NSStringFromClass([self class])] boolValue];
         NSDictionary *properties = [[self entity] propertiesByName];
-        for (NSString *key in properties) {
-            id property = [properties objectForKey:key];
-            NSString *sourceKey = [[self sourcekeyPathMapping] objectForKey:key];
+        for (NSString *propertyName in properties) {
+            // Skip transparent attribute
+            BOOL transparent = [[[[[EntityMapping sharedMapping] transparentAttributes] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName] boolValue];
+            if (transparent) {
+                continue;
+            }
+            id property = [properties objectForKey:propertyName];
+            NSString *sourceKey = [[[[EntityMapping sharedMapping] mappingAttributes] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName];
             if (![sourceKey isKindOfClass:[NSString class]] || sourceKey.length == 0) {
-                sourceKey = key;
+                sourceKey = propertyName;
             }
             if ([property isKindOfClass:[NSAttributeDescription class]]) {
-                NSAttributeType attributeType = [[properties objectForKey:key] attributeType];
+                NSAttributeType attributeType = [[properties objectForKey:propertyName] attributeType];
                 id value = [keyedValues objectForKey:sourceKey];
                 if (value == nil || [value isKindOfClass:[NSNull class]]) {
                     // Don't attempt to set nil, or you'll overwite values in self that aren't present in keyedValues
@@ -308,8 +285,14 @@ static char TargetKeyPathMappingKey;
                 } else if ((attributeType == NSFloatAttributeType) && ([value isKindOfClass:[NSString class]])) {
                     value = [NSNumber numberWithDouble:[value doubleValue]];
                 }
-                [self setValue:value forKey:key];
-            } else if ([property isKindOfClass:[NSRelationshipDescription class]]) {
+                [self setValue:value forKey:propertyName];
+            } else if (includeAll && [property isKindOfClass:[NSRelationshipDescription class]]) {
+                
+                // Include certain relationship
+                BOOL include = [[[[[EntityMapping sharedMapping] includeRelationshipsDuringDeserialization] objectForKey:NSStringFromClass([self class])] objectForKey:propertyName] boolValue];
+                if (!include) {
+                    continue;
+                }
                 NSRelationshipDescription *relationshipDescription = property;
                 NSEntityDescription *destinationEntity = [relationshipDescription destinationEntity];
                 NSString *destinationEntityName = [destinationEntity name];
@@ -318,37 +301,37 @@ static char TargetKeyPathMappingKey;
                     if ([value isKindOfClass:[NSArray class]]) {
                         if ([relationshipDescription isOrdered]) {
                             NSOrderedSet *set = [NSManagedObject orderedManagedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:value insertIntoManagedObjectContext:context];
-                            [self setValue:set forKey:key];
+                            [self setValue:set forKey:propertyName];
                         } else {
                             NSSet *set = [NSManagedObject managedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:value insertIntoManagedObjectContext:context];
-                            [self setValue:set forKey:key];
+                            [self setValue:set forKey:propertyName];
                         }
                     } else if ([value isKindOfClass:[NSDictionary class]]) {
                         if ([relationshipDescription isOrdered]) {
                             NSOrderedSet *set = [NSManagedObject orderedManagedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:@[value] insertIntoManagedObjectContext:context];
-                            [self setValue:set forKey:key];
+                            [self setValue:set forKey:propertyName];
                         } else {
                             NSSet *set = [NSManagedObject managedObjectsOfClass:NSClassFromString(destinationEntityName) forArray:@[value] insertIntoManagedObjectContext:context];
-                            [self setValue:set forKey:key];
+                            [self setValue:set forKey:propertyName];
                         }
                     }
                 } else {
                     if ([value isKindOfClass:[NSDictionary class]]) {
                         NSManagedObject *managedObject = [NSClassFromString(destinationEntityName) managedObjectForDictionary:value insertIntoManagedObjectContext:context];
-                        [self setValue:managedObject forKey:key];
+                        [self setValue:managedObject forKey:propertyName];
                     } else if ([value isKindOfClass:[NSArray class]]) {
                         NSManagedObject *managedObject = [NSClassFromString(destinationEntityName) managedObjectForDictionary:value[0] insertIntoManagedObjectContext:context];
-                        [self setValue:managedObject forKey:key];
+                        [self setValue:managedObject forKey:propertyName];
                     }
                 }
             }
         }
         
-        NSError *error = nil;
-        [context save:&error];
-        if (error) {
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        }
+//        NSError *error = nil;
+//        [context save:&error];
+//        if (error) {
+//            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+//        }
     }
     @catch (NSException *exception) {
         NSLog(@"%@", exception.reason);
@@ -356,6 +339,60 @@ static char TargetKeyPathMappingKey;
     @finally {
         
     }
+}
+
+@end
+
+#pragma mark - Entity mapping configureration
+
+@implementation EntityMapping
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        // Initialization code
+        self.mappingAttributes = [NSMutableDictionary dictionary];
+        self.transparentAttributes = [NSMutableDictionary dictionary];
+        self.transparentRelationshipsDuringSerialization = [NSMutableDictionary dictionary];
+        self.transparentAllRelationshipsDuringSerialization = [NSMutableDictionary dictionary];
+        self.includeRelationshipsDuringDeserialization = [NSMutableDictionary dictionary];
+        self.includeAllRelationshipsDuringDeserialization = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
++ (instancetype)sharedMapping {
+    static EntityMapping *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    
+    return sharedInstance;
+}
+
+- (void)mappingEntityName:(NSString *)name attributes:(NSDictionary *)attributes {
+    [self.mappingAttributes setValue:attributes forKey:name];
+}
+
+- (void)makeAttributeTransparentForEntityName:(NSString *)entityName attributeName:(NSString *)attributeName {
+    [self.transparentAttributes setValue:@{attributeName: @(YES)} forKey:entityName];
+}
+
+- (void)makeRelationshipTransparentDuringSerializationForEntityName:(NSString *)entityName relationshipName:(NSString *)relationshipName {
+    [self.transparentRelationshipsDuringSerialization setValue:@{relationshipName: @(YES)} forKey:entityName];
+}
+
+- (void)makeAllRelationshipsTransparentDuringSerializationForEntityName:(NSString *)entityName {
+    [self.transparentAllRelationshipsDuringSerialization setValue:@(YES) forKey:entityName];
+}
+
+- (void)makeRelationshipIncludedDuringDeserializationForEntityName:(NSString *)entityName relationshipName:(NSString *)relationshipName {
+    [self.includeRelationshipsDuringDeserialization setValue:@{relationshipName: @(YES)} forKey:entityName];
+}
+
+- (void)makeAllRelationshipsIncludedDuringDeserializationForEntityName:(NSString *)entityName {
+    [self.includeAllRelationshipsDuringDeserialization setValue:@(YES) forKey:entityName];
 }
 
 @end

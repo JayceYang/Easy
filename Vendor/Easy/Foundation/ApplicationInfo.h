@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
 @interface ApplicationInfo : NSObject <NSCoding, NSCopying>
 
 @property (copy, nonatomic) NSString *UUID;
 @property (copy, nonatomic) NSString *currencyCode;
 @property (copy, nonatomic) NSString *currencySymbol;
-@property (copy, nonatomic) void (^loginCompletionHandler)(void);
 
 /*
  Holds in memory

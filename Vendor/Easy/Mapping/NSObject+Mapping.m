@@ -15,7 +15,7 @@ static char TargetKeyPathMappingKey;
 //static char PropertyIndexKey;
 //static char DateFormatKey;
 
-NSString * const DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ss.sssZ";
+NSString * const DefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 NSString * const DefaultDateFormatCompatible = @"yyyy-MM-dd HH:mm:ss";
 
 @interface NSObject (MappingPrivate)
@@ -123,7 +123,8 @@ NSString * const DefaultDateFormatCompatible = @"yyyy-MM-dd HH:mm:ss";
 - (NSNumber *)numberValue
 {
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    [numberFormatter setNumberStyle:NSNumberFormatterNoStyle];
+    [numberFormatter setDecimalSeparator:@"."];
     return [numberFormatter numberFromString:self];
 }
 
@@ -358,6 +359,7 @@ NSString * const DefaultDateFormatCompatible = @"yyyy-MM-dd HH:mm:ss";
                             if ([object isKindOfClass:[NSString class]]) {
                                 NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
                                 [numberFormatter setNumberStyle:NSNumberFormatterNoStyle];
+                                [numberFormatter setDecimalSeparator:@"."];
                                 [result setValue:[numberFormatter numberFromString:object] forKey:propertyName];
                             } else {
                                 [result setValue:object forKey:propertyName];

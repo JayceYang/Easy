@@ -10,6 +10,7 @@
 
 #import "NSObject+Easy.h"
 #import "NSArray+Easy.h"
+#import "NSString+Easy.h"
 #import "ApplicationInfo.h"
 
 @implementation NSLocale (Easy)
@@ -65,7 +66,18 @@
             break;
         }
     }
-    return currencySymbol;
+    return [currencySymbol nonAlphaStringValue];
+}
+
++ (NSString *)displayNameFromCountryCode:(NSString *)code {
+    NSString *country = nil;
+    NSString *countryCode = [code theStringValue];
+    if (countryCode.length == 0) {
+        country = [self currentCountry];
+    } else {
+        country = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:countryCode];
+    }
+    return country;
 }
 
 + (BOOL)inChina
@@ -83,9 +95,11 @@
     NSUInteger count = countryCodes.count;
     NSMutableArray *countries = [NSMutableArray arrayWithCapacity:count];
     for (NSString *countryCode in countryCodes) {
-        NSString *identifier = [NSLocale localeIdentifierFromComponents:@{NSLocaleCountryCode: countryCode}];
-        NSString *country = [[NSLocale currentLocale] displayNameForKey:NSLocaleIdentifier value:identifier];
-        [countries addObject:country];
+        NSString *country = [[NSLocale systemLocale] displayNameForKey:NSLocaleCountryCode value:countryCode];
+        if (country) {
+            [countries addObject:country];
+        }
+        NSLog(@"%@\t%@", countryCode, country);
     }
     return [countries copy];
 }

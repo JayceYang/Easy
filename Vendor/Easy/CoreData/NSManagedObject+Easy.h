@@ -10,6 +10,9 @@
 
 @interface NSManagedObject (Easy)
 
+// Create an managed object, but don't insert it into managed object context yet
++ (instancetype)managedObjectWithoutManagedObjectContext;
+
 + (void)logAllInManagedObjectContext:(NSManagedObjectContext *)context predicate:(NSPredicate *)predicate;
 + (void)logAllInManagedObjectContext:(NSManagedObjectContext *)context;
 - (void)logAll;

@@ -22,6 +22,15 @@
     return result;
 }
 
++ (BOOL)runningOnSimulator {
+    NSString *model = [[UIDevice currentDevice] model];
+    if ([model hasSuffix:@"Simulator"]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (NSString *)UUIDString
 {
     CFUUIDRef UUIDRef = CFUUIDCreate(kCFAllocatorDefault);

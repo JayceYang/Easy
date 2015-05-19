@@ -11,6 +11,7 @@
 @interface UIDevice (Easy)
 
 + (NSString *)currentModel;
++ (BOOL)runningOnSimulator;
 - (NSString *)UUIDString;
 
 @end
