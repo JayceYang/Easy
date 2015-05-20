@@ -442,20 +442,46 @@ static NSUInteger const UIViewBorderViewTagBase = 1000;
     [self.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[view]-0-|" options:0 metrics:nil views:views]];
     [self.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[view]-0-|" options:0 metrics:nil views:views]];
     
-//    UIView *view = self.superview;
-//    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
-//    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
-//    NSLayoutConstraint *width = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeWidth relatedBy:0 toItem:view attribute:NSLayoutAttributeWidth multiplier:1 constant:0];
-//    NSLayoutConstraint *height = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:0 toItem:view attribute:NSLayoutAttributeHeight multiplier:1 constant:0];
-//    NSArray *constraints = @[centerX, centerY, width, height];
-//    [view addConstraints:constraints];
+    //    UIView *view = self.superview;
+    //    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    //    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
+    //    NSLayoutConstraint *width = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeWidth relatedBy:0 toItem:view attribute:NSLayoutAttributeWidth multiplier:1 constant:0];
+    //    NSLayoutConstraint *height = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:0 toItem:view attribute:NSLayoutAttributeHeight multiplier:1 constant:0];
+    //    NSArray *constraints = @[centerX, centerY, width, height];
+    //    [view addConstraints:constraints];
+}
+
+- (NSArray *)constrainToSuperviewWithEdgeInsets:(UIEdgeInsets)insets {
+    NSMutableArray *constraints = [@[] mutableCopy];
+    NSDictionary *views = @{@"view": self};
+    CGFloat top = insets.top;
+    CGFloat left = insets.left;
+    CGFloat bottom = insets.bottom;
+    CGFloat right = insets.right;
+    NSDictionary *metrics = @{@"top":@(top), @"left":@(left), @"bottom":@(bottom), @"right":@(right)};
+    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"|-left-[view]-right-|" options:0 metrics:metrics views:views]];
+    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-top-[view]-bottom-|" options:0 metrics:metrics views:views]];
+    [self.superview addConstraints:constraints];
+    return constraints;
 }
 
 - (void)constrainCentrallyToSuperview {
-    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:0 toItem:self.superview attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
-    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:0 toItem:self.superview attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
+    [self constrainCentrallyToView:self.superview];
+}
+
+- (void)constrainCentrallyToView:(UIView *)view {
+    NSLayoutConstraint *centerX = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterX relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    NSLayoutConstraint *centerY = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeCenterY relatedBy:0 toItem:view attribute:NSLayoutAttributeCenterY multiplier:1 constant:0];
     NSArray *constraints = @[centerX, centerY];
-    [self.superview addConstraints:constraints];
+    [view addConstraints:constraints];
+}
+
+- (void)constrainCentrallyToView:(UIView *)view width:(CGFloat)width height:(CGFloat)height {
+    NSDictionary *metrics = @{@"width": @(width), @"height": @(height)};
+    NSDictionary *views = @{@"view": self};
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[view(width)]" options:0 metrics:metrics views:views]];
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[view(height)]" options:0 metrics:metrics views:views]];
+    [self constrainCentrallyToView:view];
 }
 
 @end

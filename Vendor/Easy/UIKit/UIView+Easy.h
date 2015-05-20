@@ -76,6 +76,9 @@ typedef NS_OPTIONS(NSUInteger, BorderPosition) {
 - (void)configureGeneralAppearanceWhenFetchingNoData;
 
 - (void)constrainEquallyToSuperview;
+- (NSArray *)constrainToSuperviewWithEdgeInsets:(UIEdgeInsets)insets;
 - (void)constrainCentrallyToSuperview;
+- (void)constrainCentrallyToView:(UIView *)view;
+- (void)constrainCentrallyToView:(UIView *)view width:(CGFloat)width height:(CGFloat)height;
 
 @end

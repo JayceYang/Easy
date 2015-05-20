@@ -13,6 +13,7 @@
 #import "CoreDataStore.h"
 #import "UIApplication+Easy.h"
 #import "UIAlertView+Easy.h"
+#import "UIApplication+Easy.h"
 #import "UIViewController+Easy.h"
 #import "UIView+Easy.h"
 #import "UITableView+Easy.h"

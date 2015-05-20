@@ -21,9 +21,7 @@
 - (id)init
 {
     self = [super init];
-    if (self) {
-        // Initialization code
-        
+    if (self) {        
         self.language = [NSLocale preferredLanguage];
     }
     return self;
@@ -52,7 +50,7 @@
         self.bundle = [NSBundle bundleWithPath:[[NSBundle mainBundle ] pathForResource:_language ofType:@"lproj"]];
         NSLog(@"Tried to set language to %@, but ended up with %@", language, _language);
     } else {
-        NSLog(@"Setted language to %@", language);
+//        NSLog(@"Setted language to %@", language);
     }
 }
 

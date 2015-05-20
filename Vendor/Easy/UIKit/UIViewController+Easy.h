@@ -32,4 +32,7 @@
 - (CGFloat)perferedY;
 - (CGFloat)perferedHeight;
 
+- (void)presentHUD;
+- (void)dismissHUD;
+
 @end

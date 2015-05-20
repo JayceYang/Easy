@@ -16,11 +16,14 @@
 #import "UINavigationController+Easy.h"
 #import "NSArray+Easy.h"
 #import "UIAlertView+Easy.h"
+#import "UIApplication+Easy.h"
+#import "ProgressHUDViewController.h"
 #import "Macro.h"
 
 static char HasPerformedOnceHandlerKey;
 static char LeftButtonActionHandlerKey;
 static char RightButtonActionHandlerKey;
+static char ProgressHUDViewControllerKey;
 
 @interface UIViewController ()
 
@@ -208,6 +211,43 @@ static char RightButtonActionHandlerKey;
 - (CGFloat)perferedHeight
 {
     return (self.height - self.perferedY);
+}
+
+#pragma mark - Progress HUD
+
+- (ProgressHUDViewController *)progressHUDViewController {
+    return objc_getAssociatedObject(self, &ProgressHUDViewControllerKey);
+}
+
+- (void)setProgressHUDViewController:(ProgressHUDViewController *)progressHUDViewController {
+    [self willChangeValueForKey:@"progressHUDViewController"];
+    objc_setAssociatedObject(self, &ProgressHUDViewControllerKey, progressHUDViewController, OBJC_ASSOCIATION_RETAIN);
+    [self didChangeValueForKey:@"progressHUDViewController"];
+}
+
+- (void)presentHUD {
+    if ([self.view isKindOfClass:[UIScrollView class]]) {
+        [UIApplication presentHUD];
+    } else {
+        if (self.progressHUDViewController == nil) {
+            self.progressHUDViewController = [[ProgressHUDViewController alloc] initWithNoneNib];
+            //        [self presentViewController:self.progressHUDViewController animated:NO completion:nil];
+            self.progressHUDViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+            [self addChildViewController:self.progressHUDViewController];
+            [self.view addSubview:self.progressHUDViewController.view];
+            [self.progressHUDViewController.view constrainEquallyToSuperview];
+        }
+        [self.progressHUDViewController startAnimation];
+    }
+    
+}
+
+- (void)dismissHUD {
+    if ([self.view isKindOfClass:[UIScrollView class]]) {
+        [UIApplication dismissHUD];
+    } else {
+        [self.progressHUDViewController stopAnimation];
+    }
 }
 
 @end
