@@ -30,4 +30,17 @@
     return success;
 }
 
+- (id)objectAtTheIndexPath:(NSIndexPath *)indexPath {
+    id result = nil;
+    @try {
+        result = [self objectAtIndexPath:indexPath];
+    }
+    @catch (NSException *exception) {
+        ELog(@"%@",exception.reason);
+    }
+    @finally {
+        return result;
+    }
+}
+
 @end

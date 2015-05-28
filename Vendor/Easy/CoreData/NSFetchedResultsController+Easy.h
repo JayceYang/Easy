@@ -11,5 +11,6 @@
 @interface NSFetchedResultsController (Easy)
 
 - (BOOL)performFetch;
+- (id)objectAtTheIndexPath:(NSIndexPath *)indexPath;
 
 @end
