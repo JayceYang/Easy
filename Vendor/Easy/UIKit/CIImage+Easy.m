@@ -8,6 +8,8 @@
 
 #import "CIImage+Easy.h"
 
+#import "UIDevice+Easy.h"
+
 @implementation CIImage (Easy)
 
 + (CIImage *)QRCodeImageFromString:(NSString *)string
@@ -28,7 +30,11 @@
 - (UIImage *)nonInterpolatedUIImageWitiScale:(CGFloat)scale
 {
     // Render the CIImage into a CGImage
-    CGImageRef cgImage = [[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer: @(YES)}] createCGImage:self fromRect:self.extent];
+    NSDictionary *options = nil;
+    if (![UIDevice runningOnSimulator]) {
+        options = @{kCIContextUseSoftwareRenderer: @(YES)};
+    }
+    CGImageRef cgImage = [[CIContext contextWithOptions:options] createCGImage:self fromRect:self.extent];
     
     // Now we'll rescale using CoreGraphics
     UIGraphicsBeginImageContext(CGSizeMake(self.extent.size.width * scale, self.extent.size.width * scale));
